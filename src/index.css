@@ -1,14 +1,22 @@
 @import "tailwindcss";
 
 /*
+ * ============================================================================
  * SOUSVOICE — GLOBAL DESIGN TOKENS & THEME SYSTEM
+ * ============================================================================
  *
- * HCI Justification: CSS custom properties enable instantaneous,
- * non-disruptive theme transitions. This supports WCAG 2.1
- * guideline 1.4.1 (Use of Color) and 1.4.3 (Contrast).
+ * HCI Justification: We use CSS custom properties for theme switching because
+ * it allows instantaneous, non-disruptive transitions between color modes.
+ * This supports WCAG 2.1 guideline 1.4.1 (Use of Color) and 1.4.3 (Contrast).
+ *
+ * Three color modes are implemented:
+ *   1. Standard — A rich dark theme with violet/indigo accents
+ *   2. Protanopia — Swaps red-green to blue-yellow for red-blind users
+ *   3. High Contrast — Maximum contrast ratios (>= 7:1) for low-vision users
+ * ============================================================================
  */
 
-/* ── Standard Theme (Default Dark Mode) ── */
+/* ── Standard Theme (Default Dark Mode) ──────────────────────────────────── */
 :root {
   --bg-primary: #0a0a12;
   --bg-secondary: #12121e;
@@ -48,13 +56,76 @@
   --scale-factor: 1;
 }
 
-/* ── Global Styles ── */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* ── Protanopia Mode (Red-Blind) ─────────────────────────────────────────── */
+/* HCI: Replaces red/green signaling with blue/yellow per CVD guidelines. */
+[data-theme="protanopia"] {
+  --accent-primary: #38bdf8;
+  --accent-secondary: #0284c7;
+  --accent-glow: rgba(56, 189, 248, 0.3);
+  --accent-glow-strong: rgba(56, 189, 248, 0.5);
+
+  --success: #38bdf8;
+  --warning: #fbbf24;
+  --danger: #fbbf24;
+  --info: #38bdf8;
+
+  --border-subtle: rgba(56, 189, 248, 0.15);
+  --border-active: rgba(56, 189, 248, 0.4);
+
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 60px rgba(56, 189, 248, 0.08);
+  --shadow-float: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 80px rgba(56, 189, 248, 0.12);
+}
+
+/* ── High Contrast Mode ──────────────────────────────────────────────────── */
+/* HCI: Meets WCAG AAA (7:1+) contrast ratios for low-vision accessibility. */
+[data-theme="high-contrast"] {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: #111111;
+  --bg-card-hover: #1a1a1a;
+  --bg-glass: rgba(17, 17, 17, 0.95);
+  --bg-glass-hover: rgba(26, 26, 26, 0.98);
+
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #b0b0b0;
+
+  --accent-primary: #ffdd00;
+  --accent-secondary: #ffaa00;
+  --accent-glow: rgba(255, 221, 0, 0.4);
+  --accent-glow-strong: rgba(255, 221, 0, 0.6);
+
+  --success: #00ff88;
+  --warning: #ffdd00;
+  --danger: #ff4444;
+  --info: #44bbff;
+
+  --border-subtle: rgba(255, 221, 0, 0.3);
+  --border-active: rgba(255, 221, 0, 0.7);
+
+  --shadow-card: 0 0 0 2px var(--accent-primary), 0 8px 32px rgba(0, 0, 0, 0.8);
+  --shadow-float: 0 0 0 3px var(--accent-primary), 0 20px 60px rgba(0, 0, 0, 0.9);
+}
+
+/* ── Accessibility: 1.5x Typography Scaling ──────────────────────────────── */
+/* HCI: Larger text reduces fixation duration, improving readability for
+   users with low vision (WCAG 1.4.4 — Resize Text). */
+[data-a11y-scale="true"] {
+  --scale-factor: 1.5;
+}
+
+/* ── Global Styles ───────────────────────────────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 html {
   font-size: calc(16px * var(--scale-factor));
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -66,13 +137,56 @@ body {
   line-height: 1.6;
 }
 
+/* ── Focus Styles (WCAG 2.4.7 — Focus Visible) ──────────────────────────── */
+/* HCI: Visible focus indicators are critical for keyboard-only users. */
 *:focus-visible {
   outline: 3px solid var(--accent-primary);
   outline-offset: 3px;
   border-radius: var(--radius-sm);
 }
 
+/* ── Selection ───────────────────────────────────────────────────────────── */
 ::selection {
   background: var(--accent-primary);
   color: var(--bg-primary);
+}
+
+/* ── Scrollbar Styling ───────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 3px;
+}
+
+/* ── Utility Animations ──────────────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+  50% { box-shadow: 0 0 40px var(--accent-glow-strong); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Reduced Motion Preference ───────────────────────────────────────────── */
+/* HCI: Respect user's OS-level motion preferences (WCAG 2.3.3). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
