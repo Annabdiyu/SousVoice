@@ -53,7 +53,7 @@ export default function App() {
   const [direction, setDirection] = useState(1);
   const recipe = sampleRecipe;
 
-  // ── Apply persisted theme on mount ──
+  // ── Apply persisted theme on mount (restored from localStorage) ──
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', colorMode);
     document.documentElement.setAttribute('data-a11y-scale', String(largeText));
