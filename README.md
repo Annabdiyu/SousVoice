@@ -1,91 +1,101 @@
 # 🍳 SousVoice — Accessibility-First Recipe Reader
 
-A high-fidelity React prototype for an **accessibility-first, voice-controlled recipe reader** with physics-based "Antigravity" UI design. Built for a Human-Computer Interaction (HCI) course.
+![SousVoice Mockup](file:///home/ashenafi/.gemini/antigravity/brain/7ed39f80-e835-4f2c-bab2-0bb99774e657/sousvoice_mockup_design_1778654744064.png)
 
-## ✨ Features
+> **"Experience the future of hands-free cooking."**
+> SousVoice is a high-fidelity React prototype designed for an **accessibility-first, voice-controlled recipe experience**. Built with advanced spring physics and a "weightless" Antigravity UI, it redefines how we interact with technology in the kitchen.
 
-- **Antigravity Focus Mode** — One-step-at-a-time floating cards with Framer Motion spring physics and drag-to-navigate gestures
-- **Multimodal Voice Assistant** — Hands-free navigation via Web Speech API ("Next", "Back", "Repeat", "Start Timer")
-- **Color-Blind Optimization** — Three color modes: Standard, Protanopia (red-blind), and High Contrast (WCAG AAA)
-- **Cognitive Load Reduction** — Progressive disclosure hides secondary UI during active cooking
-- **Error Recovery** — Friendly toast notifications when voice commands are misunderstood, with manual override buttons
+---
 
-## 🛠️ Tech Stack
+## ✨ Core Innovation: The Antigravity Experience
 
-| Technology | Purpose |
-|------------|---------|
-| React + TypeScript | UI framework with strict type safety |
-| Vite | Build tooling and HMR |
-| Tailwind CSS | Utility-first styling with rapid theme switching |
-| Framer Motion | Spring-based physics animations |
-| Zustand | Lightweight state management with persistence |
-| Web Speech API | Voice recognition and text-to-speech |
+SousVoice isn't just a recipe app; it's a study in **Human-Computer Interaction (HCI)**.
+
+- **🌌 Antigravity Focus Mode**: Navigate through steps with floating cards powered by `framer-motion` spring physics. Every interaction feels fluid, responsive, and weightless.
+- **🎤 Multimodal Voice Assistant**: Total hands-free control using the Web Speech API. Start timers, navigate steps, and search recipes—all while your hands are busy cooking.
+- **🧠 Cognitive Load Reduction**: Through **Progressive Disclosure**, SousVoice hides secondary UI elements during active cooking, keeping you focused on the task at hand.
+- **🧩 Error Recovery**: Friendly toast notifications and manual overrides ensure that even if a voice command is misunderstood, the user remains in control.
+
+---
+
+## 🛠️ Modern Tech Stack
+
+| Feature | Technology |
+| :--- | :--- |
+| **Framework** | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) |
+| **Animations** | [Framer Motion](https://www.framer.com/motion/) |
+| **State Management** | [Zustand](https://github.com/pmndrs/zustand) |
+| **Voice / TTS** | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) |
+| **Build Tool** | [Vite](https://vitejs.dev/) |
+
+---
+
+## ♿ Inclusive Design (WCAG 2.1 Compliance)
+
+SousVoice was built from the ground up to be accessible to everyone, following strict WCAG 2.1 guidelines:
+
+*   **1.4.1 Use of Color**: Information is never conveyed by color alone. Tags and indicators use both text and iconography.
+*   **1.4.3 Contrast (AAA)**: Includes a **High Contrast Mode** providing ≥7:1 ratios for low-vision users.
+*   **1.4.4 Resize Text**: Built-in 1.5× typography scaling for improved readability.
+*   **2.1.1 Keyboard Accessible**: Full navigation support via arrow keys and Escape.
+*   **Color-Blind Optimization**: Three distinct modes:
+    *   **Standard**: Deep Violet (#8b5cf6)
+    *   **Protanopia**: Sky Blue (#38bdf8)
+    *   **High Contrast**: Sharp Yellow (#ffdd00)
+
+---
+
+## 🎤 Command Your Kitchen
+
+| Command | Action |
+| :--- | :--- |
+| `"Next"` / `"Forward"` | Advance to the next cooking step |
+| `"Back"` / `"Previous"` | Revert to the previous step |
+| `"Repeat"` / `"Again"` | Hear the current step read aloud |
+| `"Start Timer"` | Automatically set a timer for the current step |
+| `"Search [Recipe]"` | Find a specific dish in the library |
+| `"Stop"` / `"Pause"` | Temporarily disable voice recognition |
+
+---
 
 ## 🚀 Getting Started
 
+Experience SousVoice on your local machine in seconds:
+
+1.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+2.  **Launch the development server**:
+    ```bash
+    npm run dev
+    ```
+3.  **Explore**: Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## 📂 Project Architecture
+
 ```bash
-npm install
-npm run dev
-```
-
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-## 📁 Project Structure
-
-```
 src/
-├── components/
-│   ├── RecipeCard.tsx        # Animated floating step card
-│   ├── RecipeHeader.tsx      # Recipe overview with tags
-│   ├── VoiceOrb.tsx          # Pulsing voice feedback indicator
-│   ├── SettingsPanel.tsx     # Accessibility controls sidebar
-│   ├── TimerDisplay.tsx      # Floating countdown timer
-│   └── ToastNotification.tsx # Error recovery notifications
-├── hooks/
-│   └── useVoiceController.ts # Web Speech API integration
-├── stores/
-│   └── accessibilityStore.ts # Zustand state management
-├── data/
-│   └── recipes.ts            # Sample recipe dataset
-├── types.ts                  # Shared TypeScript interfaces
-├── App.tsx                   # Main layout with mode switching
-├── main.tsx                  # Application entry point
-└── index.css                 # Design tokens and theme system
+├── components/           # Modular UI (RecipeCards, VoiceOrb, etc.)
+├── hooks/                # Voice controller logic & Speech API integration
+├── stores/               # Global state for a11y & cooking flow
+├── data/                 # Curated recipe library
+└── index.css             # Radical design tokens & theme system
 ```
 
-## ♿ Accessibility (WCAG 2.1)
+---
 
-- **1.4.1 Use of Color** — All tags use icon + text labels, never color alone
-- **1.4.3 Contrast** — High Contrast mode provides ≥7:1 ratios (AAA)
-- **1.4.4 Resize Text** — 1.5× typography scaling toggle
-- **2.1.1 Keyboard** — Full arrow key and Escape navigation
-- **2.4.7 Focus Visible** — 3px accent-colored focus rings on all interactive elements
+## 📚 HCI Foundations
 
-## 🎨 Color Modes
+*   **Nielsen's Heuristics**: Applied for system status visibility, user control, and consistency.
+*   **Fitts's Law**: Implementation of large, generous touch targets for messy cooking scenarios.
+*   **Miller's Law**: Reducing working memory demands by presenting one step at a time.
 
-| Mode | Accent Color | Target Users |
-|------|-------------|--------------|
-| Standard | Violet (#8b5cf6) | General users |
-| Protanopia | Sky Blue (#38bdf8) | Red-blind (deuteranopia/protanopia) |
-| High Contrast | Yellow (#ffdd00) | Low-vision users |
-
-## 🎤 Voice Commands
-
-| Command | Action |
-|---------|--------|
-| "Next" / "Forward" | Go to next step |
-| "Back" / "Previous" | Go to previous step |
-| "Repeat" / "Again" | Read current step aloud |
-| "Start Timer" | Start step countdown |
-| "Stop" / "Pause" | Pause voice control |
-
-## 📚 HCI Principles
-
-- **Nielsen's Heuristics**: Visibility of system status (#1), User control (#3), Consistency (#4), Error prevention (#5), Flexibility (#7), Error recovery (#9)
-- **Cognitive Load Theory**: Minimized extraneous load via progressive disclosure
-- **Fitts's Law**: Large touch targets for cooking scenarios
-- **Miller's Law**: One-step-at-a-time reduces working memory demands
+---
 
 ## 📝 License
 
-This project was created for academic purposes as part of an HCI course.
+Developed for academic purposes as part of a Human-Computer Interaction course. Built with 🍳 and 💜.
