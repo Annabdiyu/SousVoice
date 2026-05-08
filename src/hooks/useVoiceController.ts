@@ -39,6 +39,10 @@ interface VoiceHandlers {
   onBack: () => void;
   onRepeat: () => void;
   onStartTimer: () => void;
+  onStopTimer: () => void;
+  onGoToStep: (stepIndex: number) => void;
+  onGoHome: () => void;
+  onSearch: (query: string) => void;
 }
 
 export function useVoiceController(handlers: VoiceHandlers) {
@@ -91,20 +95,19 @@ export function useVoiceController(handlers: VoiceHandlers) {
       const stepMatch = cmd.match(/(?:go to )?step (\d+)/);
       if (stepMatch) {
         const stepNum = parseInt(stepMatch[1], 10);
-        (handlersRef.current as any).onGoToStep?.(stepNum - 1);
+        handlersRef.current.onGoToStep?.(stepNum - 1);
         showToast(`✓ Moving to step ${stepNum}`, 'success');
         return;
       }
 
       // ── Timer Controls ──
       if (cmd.includes('timer') || cmd.includes('start timer') || cmd.includes('set timer')) {
-        handlersRef.current.onStartTimer();
+        handlersRef.current.onStartTimer?.();
         showToast('✓ Timer started!', 'success');
         return;
       }
       if (cmd.includes('stop timer') || cmd.includes('pause timer')) {
-        // We'll add this to handlers
-        (handlers as any).onStopTimer?.();
+        handlersRef.current.onStopTimer?.();
         showToast('✓ Timer stopped', 'info');
         return;
       }
@@ -116,7 +119,7 @@ export function useVoiceController(handlers: VoiceHandlers) {
         return;
       }
       if (cmd.includes('home') || cmd.includes('show recipes') || cmd.includes('library')) {
-        (handlers as any).onGoHome?.();
+        handlersRef.current.onGoHome?.();
         showToast('✓ Returning home', 'info');
         return;
       }
@@ -125,7 +128,7 @@ export function useVoiceController(handlers: VoiceHandlers) {
       const searchMatch = cmd.match(/(?:cook with|recipes with|search for) (.*)/);
       if (searchMatch) {
         const query = searchMatch[1].trim();
-        (handlers as any).onSearch?.(query);
+        handlersRef.current.onSearch?.(query);
         return;
       }
 
