@@ -83,9 +83,10 @@ export default function App() {
   const recipe = recipes.find(r => r.id === selectedRecipeId) || recipes[0];
 
   // ── Navigation handlers ──
+  // Advances to the next step if available. Otherwise, notifies completion.
   const handleNext = useCallback(() => {
     if (currentStepIndex < recipe.steps.length - 1) {
-      setDirection(1);
+      setDirection(1); // Set animation direction forwards (for framer-motion)
       nextStep(recipe.steps.length);
     } else {
       showToast('🎉 You\'ve completed all steps!', 'success');
@@ -93,18 +94,21 @@ export default function App() {
     }
   }, [currentStepIndex, recipe.steps.length, nextStep, showToast, speak]);
 
+  // Reverts to the previous step if not already at the beginning.
   const handlePrev = useCallback(() => {
     if (currentStepIndex > 0) {
-      setDirection(-1);
+      setDirection(-1); // Set animation direction backwards
       prevStep();
     }
   }, [currentStepIndex, prevStep]);
 
+  // Repeats the audio instructions for the current step (helpful if the user missed it).
   const handleRepeat = useCallback(() => {
     const step = recipe.steps[currentStepIndex];
     speak(step.instruction);
   }, [currentStepIndex, recipe.steps, speak]);
 
+  // Initializes the step-specific timer if one exists for the current step.
   const handleStartTimer = useCallback(() => {
     const step = recipe.steps[currentStepIndex];
     if (step.timerSeconds) {
@@ -114,10 +118,12 @@ export default function App() {
     }
   }, [currentStepIndex, recipe.steps, setActiveTimer, showToast]);
 
+  // Ends or clears the currently active timer.
   const handleStopTimer = useCallback(() => {
     setActiveTimer(null);
   }, [setActiveTimer]);
 
+  // Jumps fluidly to a specific step index based on a voice payload (e.g. "go to step 3").
   const handleGoToStep = useCallback((index: number) => {
     if (index >= 0 && index < recipe.steps.length) {
       setDirection(index > currentStepIndex ? 1 : -1);
@@ -127,11 +133,14 @@ export default function App() {
     }
   }, [currentStepIndex, recipe.steps.length, setCurrentStep, showToast]);
 
+  // Returns the user to the recipe discovery view.
   const handleGoHome = useCallback(() => {
     exitCookingMode();
     setSelectedRecipe(null);
   }, [exitCookingMode, setSelectedRecipe]);
 
+  // Exits cooking mode, processes Voice search intents within the gallery view
+  // Generates feedback logic based on whether recipes matched or not.
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
     handleGoHome(); // Go to library to show results
