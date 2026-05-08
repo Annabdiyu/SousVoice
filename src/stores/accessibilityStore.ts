@@ -46,6 +46,8 @@ interface AccessibilityState {
   setSelectedRecipe: (id: string | null) => void;
   filterTag: string | null;
   setFilterTag: (tag: string | null) => void;
+  searchQuery: string | null;
+  setSearchQuery: (query: string | null) => void;
 
   // ── Recipe Navigation State ──
   currentStepIndex: number;
@@ -112,7 +114,9 @@ export const useAccessibilityStore = create<AccessibilityState>()(
       selectedRecipeId: null,
       setSelectedRecipe: (id) => set({ selectedRecipeId: id, cookingMode: false, currentStepIndex: 0 }),
       filterTag: null,
-      setFilterTag: (tag) => set({ filterTag: tag }),
+      setFilterTag: (tag) => set({ filterTag: tag, searchQuery: null }),
+      searchQuery: null,
+      setSearchQuery: (query) => set({ searchQuery: query, filterTag: null }),
 
       // ── Recipe Navigation ──
       currentStepIndex: 0,

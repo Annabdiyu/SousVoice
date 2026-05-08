@@ -108,8 +108,17 @@ export function useVoiceController(handlers: VoiceHandlers) {
         showToast('✓ Returning home', 'info');
         return;
       }
+
+      // Conversational Search (e.g., "What can I cook with chicken?")
+      const searchMatch = cmd.match(/(?:cook with|recipes with|search for) (.*)/);
+      if (searchMatch) {
+        const query = searchMatch[1].trim();
+        (handlers as any).onSearch?.(query);
+        return;
+      }
+
       if (cmd.includes('help') || cmd.includes('what can i say')) {
-        showToast('Try: "Next", "Back", "Repeat", "Step 2", or "Go Home"', 'info');
+        showToast('Try: "Next", "Back", "Cook with chicken", or "Go Home"', 'info');
         return;
       }
 

@@ -43,6 +43,7 @@ export default function App() {
     exitCookingMode,
     selectedRecipeId,
     setSelectedRecipe,
+    setSearchQuery,
     currentStepIndex,
     setCurrentStep,
     nextStep,
@@ -147,6 +148,24 @@ export default function App() {
     setSelectedRecipe(null);
   }, [exitCookingMode, setSelectedRecipe]);
 
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+    handleGoHome(); // Go to library to show results
+    
+    const results = recipes.filter(r => 
+      r.title.toLowerCase().includes(query.toLowerCase()) || 
+      r.ingredients.some(i => i.toLowerCase().includes(query.toLowerCase()))
+    );
+
+    if (results.length > 0) {
+      speak(`I found ${results.length} recipes with ${query}.`);
+      showToast(`🔍 Found ${results.length} results for "${query}"`, 'success');
+    } else {
+      speak(`I couldn't find any recipes with ${query}.`);
+      showToast(`∅ No results for "${query}"`, 'info');
+    }
+  }, [handleGoHome, setSearchQuery, showToast, speak]);
+
   // ── Voice controller integration ──
   const { isListening, isSupported, toggleListening } = useVoiceController({
     onNext: handleNext,
@@ -156,6 +175,7 @@ export default function App() {
     onStopTimer: handleStopTimer,
     onGoToStep: handleGoToStep,
     onGoHome: handleGoHome,
+    onSearch: handleSearch,
   } as any);
 
   const currentStep = recipe.steps[currentStepIndex];

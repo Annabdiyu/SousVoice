@@ -10,11 +10,16 @@ import { useAccessibilityStore } from '../stores/accessibilityStore';
 import { recipes } from '../data/recipes';
 
 export default function RecipeGallery() {
-  const { setSelectedRecipe, filterTag, setFilterTag } = useAccessibilityStore();
+  const { setSelectedRecipe, filterTag, setFilterTag, searchQuery, setSearchQuery } = useAccessibilityStore();
 
-  const filteredRecipes = filterTag
-    ? recipes.filter((r) => r.tags.some((t) => t.label === filterTag))
-    : recipes;
+  const filteredRecipes = recipes.filter((r) => {
+    const matchesTag = !filterTag || r.tags.some((t) => t.label === filterTag);
+    const matchesSearch = !searchQuery || 
+      r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.ingredients.some((i) => i.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    return matchesTag && matchesSearch;
+  });
 
   const allTags = Array.from(
     new Set(recipes.flatMap((r) => r.tags.map((t) => t.label)))
@@ -22,6 +27,35 @@ export default function RecipeGallery() {
 
   return (
     <div className="w-full max-w-6xl mx-auto py-8">
+      {/* ── Search Status (HCI: Visibility of System Status) ── */}
+      <AnimatePresence>
+        {searchQuery && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="flex items-center justify-center gap-4 mb-8"
+          >
+            <div 
+              className="px-6 py-3 rounded-2xl flex items-center gap-3 border shadow-xl"
+              style={{ background: 'var(--bg-glass)', borderColor: 'var(--accent-primary)' }}
+            >
+              <span className="text-xl">🔍</span>
+              <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                Showing recipes with <span style={{ color: 'var(--accent-primary)' }}>"{searchQuery}"</span>
+              </span>
+              <button
+                onClick={() => setSearchQuery(null)}
+                className="ml-2 p-1.5 rounded-full hover:bg-white/10 transition-colors"
+                style={{ color: 'var(--text-muted)' }}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* ── Category Filters (Functional Tags) ── */}
       <div className="flex flex-wrap justify-center gap-2 mb-12">
         <button
