@@ -28,7 +28,9 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const {
     colorMode, setColorMode,
     largeText, toggleLargeText,
+    reducedMotion, toggleReducedMotion,
     voiceEnabled, toggleVoice,
+<<<<<<< HEAD
   } = useAccessibilityStore(useShallow((state) => ({
     colorMode: state.colorMode,
     setColorMode: state.setColorMode,
@@ -37,6 +39,10 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     voiceEnabled: state.voiceEnabled,
     toggleVoice: state.toggleVoice,
   })));
+=======
+    autoReadSteps, toggleAutoReadSteps,
+  } = useAccessibilityStore();
+>>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339
 
   return (
     <AnimatePresence>
@@ -126,16 +132,26 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                 className="text-sm font-semibold uppercase tracking-wider mb-4"
                 style={{ color: 'var(--text-muted)' }}
               >
-                Typography
+                Typography & Motion
               </h3>
-              <ToggleRow
-                label="Large Text (1.5×)"
-                description="Increases text size for readability"
-                icon="🔤"
-                checked={largeText}
-                onToggle={toggleLargeText}
-                id="toggle-large-text"
-              />
+              <div className="space-y-3">
+                <ToggleRow
+                  label="Large Text (1.5×)"
+                  description="Increases text size for readability"
+                  icon="🔤"
+                  checked={largeText}
+                  onToggle={toggleLargeText}
+                  id="toggle-large-text"
+                />
+                <ToggleRow
+                  label="Reduced Motion"
+                  description="Disables decorative animations"
+                  icon="🧊"
+                  checked={reducedMotion}
+                  onToggle={toggleReducedMotion}
+                  id="toggle-reduced-motion"
+                />
+              </div>
             </section>
 
             {/* ── Voice Toggle ── */}
@@ -144,16 +160,26 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                 className="text-sm font-semibold uppercase tracking-wider mb-4"
                 style={{ color: 'var(--text-muted)' }}
               >
-                Voice Control
+                Voice Assistant
               </h3>
-              <ToggleRow
-                label="Voice Commands"
-                description="Hands-free navigation"
-                icon="🎤"
-                checked={voiceEnabled}
-                onToggle={toggleVoice}
-                id="toggle-voice"
-              />
+              <div className="space-y-3">
+                <ToggleRow
+                  label="Voice Commands"
+                  description="Hands-free navigation"
+                  icon="🎤"
+                  checked={voiceEnabled}
+                  onToggle={toggleVoice}
+                  id="toggle-voice"
+                />
+                <ToggleRow
+                  label="Auto-Read Steps"
+                  description="Reads instructions aloud automatically"
+                  icon="🔊"
+                  checked={autoReadSteps}
+                  onToggle={toggleAutoReadSteps}
+                  id="toggle-auto-read"
+                />
+              </div>
             </section>
 
             {/* ── Command Reference ── */}
@@ -162,18 +188,19 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                 className="text-sm font-semibold uppercase tracking-wider mb-3"
                 style={{ color: 'var(--text-muted)' }}
               >
-                Voice Commands
+                What can I say?
               </h3>
               <div
                 className="rounded-xl p-4 space-y-2 text-sm"
                 style={{ background: 'var(--bg-card)', color: 'var(--text-secondary)' }}
               >
                 {[
-                  ['"Next"', 'Go to next step'],
-                  ['"Back"', 'Go to previous step'],
-                  ['"Repeat"', 'Repeat current step'],
+                  ['"Next" / "Continue"', 'Next step'],
+                  ['"Back"', 'Previous step'],
+                  ['"Repeat" / "Read"', 'Hear step again'],
+                  ['"Step 3"', 'Jump to step 3'],
                   ['"Start Timer"', 'Start step timer'],
-                  ['"Stop"', 'Pause voice control'],
+                  ['"Help"', 'Show commands'],
                 ].map(([cmd, desc]) => (
                   <div key={cmd} className="flex justify-between">
                     <code

@@ -1,18 +1,27 @@
 /**
- * RecipeHeader — Recipe overview with accessible tag rendering.
+ * RecipeHeader — Recipe overview displayed before Cooking Mode
+ *
+ * HCI: Shows all metadata (tags, ingredients, times) upfront so users
+ * can prepare before cooking. This is hidden in Cooking Mode to reduce
+ * cognitive load ("Progressive Disclosure").
+ *
  * Tags use icon + text label (WCAG 1.4.1 — never color alone).
- * Hidden during Cooking Mode (progressive disclosure).
  */
+<<<<<<< HEAD
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
+=======
+>>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339
 import { motion } from 'framer-motion';
 import type { Recipe } from '../types';
 
 interface RecipeHeaderProps {
   recipe: Recipe;
   onStartCooking: () => void;
+  onBack: () => void;
 }
 
+<<<<<<< HEAD
 const recipeEmojis: Record<string, string> = {
   'creamy-tuscan-pasta': '🍝',
   'honey-garlic-salmon': '🐟',
@@ -22,6 +31,10 @@ const recipeEmojis: Record<string, string> = {
 
 const RecipeHeader = memo(function RecipeHeader({ recipe, onStartCooking }: RecipeHeaderProps) {
   const tagColors: Record<string, string> = {
+=======
+export default function RecipeHeader({ recipe, onStartCooking, onBack }: RecipeHeaderProps) {
+  const tagStyles: Record<string, string> = {
+>>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339
     allergen: 'var(--danger)',
     spiciness: 'var(--warning)',
     dietary: 'var(--success)',
@@ -35,133 +48,133 @@ const RecipeHeader = memo(function RecipeHeader({ recipe, onStartCooking }: Reci
       transition={{ type: 'spring', stiffness: 100, damping: 18 }}
       className="w-full max-w-3xl mx-auto"
     >
-      {/* Breadcrumb */}
-      <Link
-        to="/recipes"
-        className="inline-flex items-center gap-1.5 text-sm font-medium mb-6 no-underline transition-colors"
-        style={{ color: 'var(--text-muted)' }}
+      {/* ── Back Navigation (HCI: Contextual Navigation) ── */}
+      <motion.button
+        onClick={onBack}
+        className="flex items-center gap-2 mb-6 text-sm font-bold opacity-60 hover:opacity-100 transition-all hover:-translate-x-1"
+        style={{ color: 'var(--text-secondary)' }}
+        aria-label="Return to recipe discovery"
       >
-        ← Back to Recipes
-      </Link>
+        ← Back to Discovery
+      </motion.button>
 
-      {/* Hero card */}
-      <div
-        className="rounded-2xl overflow-hidden mb-8"
-        style={{ background: 'var(--bg-card)', border: '1px solid var(--border-card)' }}
-      >
-        {/* Image area */}
-        <div
-          className="h-48 md:h-56 flex items-center justify-center relative overflow-hidden"
-          style={{ background: 'var(--bg-elevated)' }}
+      {/* ── Title Section ── */}
+      <div className="text-center mb-8">
+        <motion.h1
+          className="text-4xl md:text-5xl font-bold mb-3 leading-tight"
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, type: 'spring', stiffness: 100 }}
         >
-          <div
-            className="absolute inset-0 opacity-15"
-            style={{ background: 'var(--accent-gradient)', backgroundSize: '200% 200%', animation: 'gradient-shift 6s ease infinite' }}
-          />
-          <motion.span
-            className="text-8xl md:text-9xl relative z-10"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            {recipeEmojis[recipe.id] || '🍽️'}
-          </motion.span>
-        </div>
-
-        {/* Content */}
-        <div className="p-6 md:p-8">
-          <h1
-            className="text-3xl md:text-4xl font-bold mb-3 leading-tight"
-            style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
-          >
-            {recipe.title}
-          </h1>
-          <p className="text-base leading-relaxed mb-6" style={{ color: 'var(--text-secondary)' }}>
-            {recipe.description}
-          </p>
-
-          {/* Meta chips */}
-          <div className="flex flex-wrap gap-3 mb-6">
-            {[
-              { icon: '👥', text: `${recipe.servings} servings` },
-              { icon: '🔪', text: `Prep: ${recipe.prepTime}` },
-              { icon: '🔥', text: `Cook: ${recipe.cookTime}` },
-              { icon: '📋', text: `${recipe.steps.length} steps` },
-            ].map((m) => (
-              <div
-                key={m.text}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium"
-                style={{ background: 'var(--bg-elevated)', color: 'var(--text-secondary)', border: '1px solid var(--border-card)' }}
-              >
-                <span aria-hidden="true">{m.icon}</span> {m.text}
-              </div>
-            ))}
-          </div>
-
-          {/* Tags (icon + text, never color alone — WCAG 1.4.1) */}
-          <div className="flex flex-wrap gap-2 mb-6" role="list" aria-label="Recipe tags">
-            {recipe.tags.map((tag) => (
-              <span
-                key={tag.label}
-                className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-                style={{
-                  background: 'var(--bg-primary)',
-                  color: tagColors[tag.type] || 'var(--text-secondary)',
-                  border: `1px solid ${tagColors[tag.type] || 'var(--border-card)'}`,
-                }}
-                role="listitem"
-              >
-                <span aria-hidden="true">{tag.icon}</span>
-                {tag.label}
-              </span>
-            ))}
-          </div>
-
-          {/* Start Cooking CTA */}
-          <motion.button
-            onClick={onStartCooking}
-            className="w-full flex items-center justify-center gap-3 py-4 rounded-xl text-base font-bold transition-all"
-            style={{ background: 'var(--accent-gradient)', color: '#fff', boxShadow: 'var(--shadow-glow)' }}
-            whileHover={{ scale: 1.02, y: -1 }}
-            whileTap={{ scale: 0.98 }}
-            id="btn-start-cooking"
-            aria-label={`Start cooking ${recipe.title}`}
-          >
-            👨‍🍳 Start Cooking
-          </motion.button>
-        </div>
+          {recipe.title}
+        </motion.h1>
+        <p
+          className="text-lg leading-relaxed max-w-xl mx-auto"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          {recipe.description}
+        </p>
       </div>
 
-      {/* Ingredients card */}
+      {/* ── Metadata Chips ── */}
+      <div className="flex flex-wrap justify-center gap-3 mb-8">
+        <MetaChip icon="👥" label={`${recipe.servings} servings`} />
+        <MetaChip icon="🔪" label={`Prep: ${recipe.prepTime}`} />
+        <MetaChip icon="🔥" label={`Cook: ${recipe.cookTime}`} />
+      </div>
+
+      {/* ── Tags (icon + text, never color alone per WCAG 1.4.1) ── */}
+      <div className="flex flex-wrap justify-center gap-2 mb-8" role="list" aria-label="Recipe tags">
+        {recipe.tags.map((tag) => (
+          <span
+            key={tag.label}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium"
+            style={{
+              background: 'var(--bg-card)',
+              color: tagStyles[tag.type] || 'var(--text-secondary)',
+              border: `1px solid ${tagStyles[tag.type] || 'var(--border-subtle)'}`,
+            }}
+            role="listitem"
+          >
+            <span aria-hidden="true">{tag.icon}</span>
+            {tag.label}
+          </span>
+        ))}
+      </div>
+
+      {/* ── Ingredients ── */}
       <div
-        className="rounded-2xl p-6 md:p-8"
-        style={{ background: 'var(--bg-card)', border: '1px solid var(--border-card)' }}
+        className="rounded-2xl p-6 mb-8"
+        style={{
+          background: 'var(--bg-glass)',
+          border: '1px solid var(--border-subtle)',
+          backdropFilter: 'blur(12px)',
+        }}
       >
         <h2
-          className="text-lg font-bold mb-5 flex items-center gap-2"
+          className="text-lg font-bold mb-4 flex items-center gap-2"
           style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
         >
           🛒 Ingredients
         </h2>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3" role="list">
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2" role="list">
           {recipe.ingredients.map((item, i) => (
             <li
               key={i}
-              className="flex items-start gap-2.5 text-sm py-1.5"
+              className="flex items-start gap-2 text-sm"
               style={{ color: 'var(--text-secondary)' }}
             >
-              <span
-                className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5"
-                style={{ background: 'var(--accent-glow)', color: 'var(--accent-primary)' }}
-              >
-                {i + 1}
-              </span>
+              <span style={{ color: 'var(--accent-primary)' }}>•</span>
               {item}
             </li>
           ))}
         </ul>
       </div>
+
+      {/* ── Start Cooking CTA ── */}
+      <div className="text-center">
+        <motion.button
+          onClick={onStartCooking}
+          className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-lg font-bold transition-all"
+          style={{
+            background: 'var(--accent-primary)',
+            color: 'var(--bg-primary)',
+            boxShadow: '0 8px 30px var(--accent-glow)',
+          }}
+          whileHover={{ scale: 1.05, y: -2 }}
+          whileTap={{ scale: 0.97 }}
+          id="btn-start-cooking"
+          aria-label={`Start cooking ${recipe.title} — ${recipe.steps.length} steps`}
+        >
+          👨‍🍳 Start Cooking
+          <span className="text-sm font-normal opacity-80">
+            ({recipe.steps.length} steps)
+          </span>
+        </motion.button>
+      </div>
     </motion.div>
   );
+<<<<<<< HEAD
 });
 
 export default RecipeHeader;
+=======
+}
+
+function MetaChip({ icon, label }: { icon: string; label: string }) {
+  return (
+    <div
+      className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
+      style={{
+        background: 'var(--bg-card)',
+        color: 'var(--text-secondary)',
+        border: '1px solid var(--border-subtle)',
+      }}
+    >
+      <span aria-hidden="true">{icon}</span>
+      {label}
+    </div>
+  );
+}
+>>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339

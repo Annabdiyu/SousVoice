@@ -9,9 +9,13 @@
  * Accessibility: The orb has aria-live="polite" and descriptive
  * labels so screen readers announce state changes.
  */
+<<<<<<< HEAD
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
+=======
+import { motion, AnimatePresence } from 'framer-motion';
+>>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339
 import { useAccessibilityStore } from '../stores/accessibilityStore';
 
 interface VoiceOrbProps {
@@ -37,7 +41,6 @@ const VoiceOrb = memo(function VoiceOrb({ isListening, isSupported, onToggle }: 
             : 'var(--bg-card)',
           border: `2px solid ${isListening ? 'var(--accent-primary)' : 'var(--border-subtle)'}`,
           color: isListening ? 'var(--bg-primary)' : 'var(--text-primary)',
-          focusRingColor: 'var(--accent-primary)',
         }}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.92 }}
@@ -83,33 +86,51 @@ const VoiceOrb = memo(function VoiceOrb({ isListening, isSupported, onToggle }: 
         </span>
       </motion.button>
 
+      {/* Transcription display (HCI: Visibility of System Status) */}
+      <div className="h-10 flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          {lastCommand && isListening ? (
+            <motion.div
+              key={lastCommand}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="px-4 py-1.5 rounded-full text-sm font-medium backdrop-blur-md border shadow-lg max-w-[280px] truncate"
+              style={{
+                background: 'var(--bg-glass)',
+                color: 'var(--accent-primary)',
+                borderColor: 'var(--border-active)',
+              }}
+              role="status"
+              aria-live="polite"
+            >
+              <span className="opacity-60 mr-2">Heard:</span>
+              "{lastCommand}"
+            </motion.div>
+          ) : isListening ? (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              className="text-xs tracking-widest uppercase font-bold"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              Listening…
+            </motion.span>
+          ) : null}
+        </AnimatePresence>
+      </div>
+
       {/* Status label */}
       <span
-        className="text-xs font-medium tracking-wide"
+        className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40"
         style={{ color: isListening ? 'var(--accent-primary)' : 'var(--text-muted)' }}
       >
         {!isSupported
-          ? 'Not Supported'
+          ? 'Voice Not Supported'
           : isListening
-            ? 'Listening…'
-            : 'Voice Off'}
+            ? 'Voice Active'
+            : 'Voice Idle'}
       </span>
-
-      {/* Last heard command */}
-      {lastCommand && isListening && (
-        <motion.span
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-xs px-3 py-1 rounded-full max-w-[180px] truncate"
-          style={{
-            background: 'var(--bg-secondary)',
-            color: 'var(--text-secondary)',
-            border: '1px solid var(--border-subtle)',
-          }}
-        >
-          "{lastCommand}"
-        </motion.span>
-      )}
     </div>
   );
 });
