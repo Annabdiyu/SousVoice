@@ -22,14 +22,9 @@
  *    cohesive "weightless" feel throughout the application.
  * ============================================================================
  */
-<<<<<<< HEAD
-import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useShallow } from 'zustand/react/shallow';
-=======
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
->>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339
+import { useShallow } from 'zustand/react/shallow';
 import { useAccessibilityStore } from './stores/accessibilityStore';
 import { useVoiceController } from './hooks/useVoiceController';
 import { recipes } from './data/recipes';
@@ -43,14 +38,6 @@ import TimerDisplay from './components/TimerDisplay';
 import ToastNotification from './components/ToastNotification';
 
 export default function App() {
-<<<<<<< HEAD
-  const { colorMode, largeText, cookingMode } = useAccessibilityStore(useShallow((state) => ({
-    colorMode: state.colorMode,
-    largeText: state.largeText,
-    cookingMode: state.cookingMode,
-  })));
-  const [settingsOpen, setSettingsOpen] = useState(false);
-=======
   const {
     cookingMode,
     enterCookingMode,
@@ -69,8 +56,25 @@ export default function App() {
     setActiveTimer,
     showToast,
     speak,
-  } = useAccessibilityStore();
->>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339
+  } = useAccessibilityStore(useShallow((state) => ({
+    cookingMode: state.cookingMode,
+    enterCookingMode: state.enterCookingMode,
+    exitCookingMode: state.exitCookingMode,
+    selectedRecipeId: state.selectedRecipeId,
+    setSelectedRecipe: state.setSelectedRecipe,
+    setSearchQuery: state.setSearchQuery,
+    currentStepIndex: state.currentStepIndex,
+    setCurrentStep: state.setCurrentStep,
+    nextStep: state.nextStep,
+    prevStep: state.prevStep,
+    colorMode: state.colorMode,
+    largeText: state.largeText,
+    reducedMotion: state.reducedMotion,
+    autoReadSteps: state.autoReadSteps,
+    setActiveTimer: state.setActiveTimer,
+    showToast: state.showToast,
+    speak: state.speak,
+  })));
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [direction, setDirection] = useState(1);

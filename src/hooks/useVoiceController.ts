@@ -81,17 +81,8 @@ export function useVoiceController(handlers: VoiceHandlers) {
         showToast('✓ Previous step', 'success');
         return;
       }
-<<<<<<< HEAD
-      if (cmd.includes('repeat') || cmd.includes('again')) {
-        handlersRef.current.onRepeat();
-        showToast('✓ Repeating step', 'success');
-        return;
-      }
-      if (cmd.includes('timer')) {
-        handlersRef.current.onStartTimer();
-=======
       if (cmd.includes('repeat') || cmd.includes('again') || cmd.includes('read')) {
-        handlers.onRepeat();
+        handlersRef.current.onRepeat();
         showToast('✓ Repeating step', 'success');
         return;
       }
@@ -100,17 +91,14 @@ export function useVoiceController(handlers: VoiceHandlers) {
       const stepMatch = cmd.match(/(?:go to )?step (\d+)/);
       if (stepMatch) {
         const stepNum = parseInt(stepMatch[1], 10);
-        // We'll pass this to a new handler in App.tsx or use a generic approach
-        // For now, let's assume handlers.onGoToStep exists or we'll add it
-        (handlers as any).onGoToStep?.(stepNum - 1);
+        (handlersRef.current as any).onGoToStep?.(stepNum - 1);
         showToast(`✓ Moving to step ${stepNum}`, 'success');
         return;
       }
 
       // ── Timer Controls ──
-      if (cmd.includes('start timer') || cmd.includes('set timer')) {
-        handlers.onStartTimer();
->>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339
+      if (cmd.includes('timer') || cmd.includes('start timer') || cmd.includes('set timer')) {
+        handlersRef.current.onStartTimer();
         showToast('✓ Timer started!', 'success');
         return;
       }

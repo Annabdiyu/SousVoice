@@ -7,11 +7,7 @@
  *
  * Tags use icon + text label (WCAG 1.4.1 — never color alone).
  */
-<<<<<<< HEAD
 import { memo } from 'react';
-import { Link } from 'react-router-dom';
-=======
->>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339
 import { motion } from 'framer-motion';
 import type { Recipe } from '../types';
 
@@ -21,20 +17,8 @@ interface RecipeHeaderProps {
   onBack: () => void;
 }
 
-<<<<<<< HEAD
-const recipeEmojis: Record<string, string> = {
-  'creamy-tuscan-pasta': '🍝',
-  'honey-garlic-salmon': '🐟',
-  'classic-margherita-pizza': '🍕',
-  'thai-green-curry': '🍛',
-};
-
-const RecipeHeader = memo(function RecipeHeader({ recipe, onStartCooking }: RecipeHeaderProps) {
-  const tagColors: Record<string, string> = {
-=======
-export default function RecipeHeader({ recipe, onStartCooking, onBack }: RecipeHeaderProps) {
+const RecipeHeader = memo(function RecipeHeader({ recipe, onStartCooking, onBack }: RecipeHeaderProps) {
   const tagStyles: Record<string, string> = {
->>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339
     allergen: 'var(--danger)',
     spiciness: 'var(--warning)',
     dietary: 'var(--success)',
@@ -155,12 +139,9 @@ export default function RecipeHeader({ recipe, onStartCooking, onBack }: RecipeH
       </div>
     </motion.div>
   );
-<<<<<<< HEAD
 });
 
 export default RecipeHeader;
-=======
-}
 
 function MetaChip({ icon, label }: { icon: string; label: string }) {
   return (
@@ -177,4 +158,3 @@ function MetaChip({ icon, label }: { icon: string; label: string }) {
     </div>
   );
 }
->>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339

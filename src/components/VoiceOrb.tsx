@@ -9,13 +9,9 @@
  * Accessibility: The orb has aria-live="polite" and descriptive
  * labels so screen readers announce state changes.
  */
-<<<<<<< HEAD
 import { memo } from 'react';
-import { motion } from 'framer-motion';
-import { useShallow } from 'zustand/react/shallow';
-=======
 import { motion, AnimatePresence } from 'framer-motion';
->>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339
+import { useShallow } from 'zustand/react/shallow';
 import { useAccessibilityStore } from '../stores/accessibilityStore';
 
 interface VoiceOrbProps {

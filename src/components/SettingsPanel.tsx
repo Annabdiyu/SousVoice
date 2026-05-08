@@ -30,19 +30,19 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     largeText, toggleLargeText,
     reducedMotion, toggleReducedMotion,
     voiceEnabled, toggleVoice,
-<<<<<<< HEAD
+    autoReadSteps, toggleAutoReadSteps,
   } = useAccessibilityStore(useShallow((state) => ({
     colorMode: state.colorMode,
     setColorMode: state.setColorMode,
     largeText: state.largeText,
     toggleLargeText: state.toggleLargeText,
+    reducedMotion: state.reducedMotion,
+    toggleReducedMotion: state.toggleReducedMotion,
     voiceEnabled: state.voiceEnabled,
     toggleVoice: state.toggleVoice,
+    autoReadSteps: state.autoReadSteps,
+    toggleAutoReadSteps: state.toggleAutoReadSteps,
   })));
-=======
-    autoReadSteps, toggleAutoReadSteps,
-  } = useAccessibilityStore();
->>>>>>> a3b55610c9229bbfd33f67e76509c5179842f339
 
   return (
     <AnimatePresence>
