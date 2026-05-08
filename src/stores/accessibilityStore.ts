@@ -184,6 +184,16 @@ export const useAccessibilityStore = create<AccessibilityState>()(
         )
       })),
       clearShoppingList: () => set({ shoppingList: [] }),
+
+      // ── Sorting Logic ──
+      sortByDifficulty: (recipes: any[]) => {
+        const difficultyMap: Record<string, number> = { 'Easy': 1, 'Medium': 2, 'Hard': 3 };
+        return [...recipes].sort((a, b) => {
+          const aDiff = a.tags.find((t: any) => t.type === 'difficulty')?.label || 'Medium';
+          const bDiff = b.tags.find((t: any) => t.type === 'difficulty')?.label || 'Medium';
+          return difficultyMap[aDiff] - difficultyMap[bDiff];
+        });
+      },
     }),
     {
       name: 'sousvoice-accessibility',
