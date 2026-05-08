@@ -78,7 +78,23 @@ const VoiceOrb = memo(function VoiceOrb({ isListening, isSupported, onToggle }: 
           </>
         )}
         <span className="text-2xl relative z-10" aria-hidden="true">
-          {!isSupported ? '🚫' : isListening ? '🎤' : '🎙️'}
+          {!isSupported ? '🚫' : isListening ? (
+            <div className="flex items-center gap-[2px] h-6">
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="w-1 bg-current rounded-full"
+                  animate={{ height: [8, 20, 12, 18, 10] }}
+                  transition={{
+                    duration: 0.6,
+                    repeat: Infinity,
+                    delay: i * 0.1,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
+            </div>
+          ) : '🎙️'}
         </span>
       </motion.button>
 
