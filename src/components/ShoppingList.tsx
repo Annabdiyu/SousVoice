@@ -1,3 +1,12 @@
+/**
+ * ShoppingList.tsx — Sidebar component for managing grocery items across recipes.
+ * 
+ * HCI Justification:
+ * 1. PERSISTENCE (Nielsen #6): Uses local storage to ensure users don't lose their
+ *    list accidentally, supporting Recognition over Recall.
+ * 2. MINIMALIST DESIGN (Nielsen #8): Groups items by recipe to reduce visual noise.
+ * 3. ERROR RECOVERY: Provides a clear way to remove single items or clear the list.
+ */
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAccessibilityStore } from '../stores/accessibilityStore';
