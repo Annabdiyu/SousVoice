@@ -86,4 +86,4 @@ src/
 - **Fitts's Law**: Large touch targets for cooking scenarios
 - **Miller's Law**: One-step-at-a-time reduces working memory demands
 
-
+l
