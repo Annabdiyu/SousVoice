@@ -139,3 +139,7 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+.will-change-transform {
+  will-change: transform;
+}

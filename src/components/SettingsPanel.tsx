@@ -9,6 +9,7 @@
  * ("Progressive Disclosure" pattern).
  */
 import { motion, AnimatePresence } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
 import { useAccessibilityStore } from '../stores/accessibilityStore';
 import type { ColorMode } from '../types';
 
@@ -28,7 +29,14 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     colorMode, setColorMode,
     largeText, toggleLargeText,
     voiceEnabled, toggleVoice,
-  } = useAccessibilityStore();
+  } = useAccessibilityStore(useShallow((state) => ({
+    colorMode: state.colorMode,
+    setColorMode: state.setColorMode,
+    largeText: state.largeText,
+    toggleLargeText: state.toggleLargeText,
+    voiceEnabled: state.voiceEnabled,
+    toggleVoice: state.toggleVoice,
+  })));
 
   return (
     <AnimatePresence>

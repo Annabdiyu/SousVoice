@@ -10,8 +10,9 @@
  * 4. AnimatePresence ensures smooth enter/exit transitions,
  *    maintaining object constancy (Gestalt continuity).
  */
-import { useState } from 'react';
-import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
+import { memo } from 'react';
+import { motion, AnimatePresence, useMotionValue, useTransform, type PanInfo } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
 import { useAccessibilityStore } from '../stores/accessibilityStore';
 import type { RecipeStep } from '../types';
 
@@ -61,7 +62,7 @@ const cardVariants = {
   }),
 };
 
-export default function RecipeCard({
+const RecipeCard = memo(function RecipeCard({
   step,
   stepIndex,
   totalSteps,
@@ -70,15 +71,22 @@ export default function RecipeCard({
   onPrev,
   onStartTimer,
 }: RecipeCardProps) {
-  const { largeText } = useAccessibilityStore();
-  const [dragX, setDragX] = useState(0);
+  const { largeText } = useAccessibilityStore(useShallow((state) => ({ largeText: state.largeText })));
+  const x = useMotionValue(0);
+
+  // Performance: Compute border and shadow using Framer Motion transforms directly
+  // bypassing continuous React renders during drag events.
+  const cardBorderColor = useTransform(
+    x,
+    [-80, -40, 0, 40, 80],
+    ['var(--border-active)', 'var(--border-active)', 'var(--border-subtle)', 'var(--border-active)', 'var(--border-active)']
+  );
 
   /**
    * HCI: Drag-to-navigate provides a gestural shortcut.
    * Threshold of 80px prevents accidental navigation (Error Prevention).
    */
   const handleDragEnd = (_: unknown, info: PanInfo) => {
-    setDragX(0);
     if (info.offset.x > 80 && stepIndex > 0) {
       onPrev();
     } else if (info.offset.x < -80 && stepIndex < totalSteps - 1) {
@@ -101,8 +109,8 @@ export default function RecipeCard({
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.15}
-          onDrag={(_, info) => setDragX(info.offset.x)}
           onDragEnd={handleDragEnd}
+          style={{ x }}
           whileHover={{ y: -4, transition: { type: 'spring', stiffness: 300 } }}
           className="w-full max-w-2xl cursor-grab active:cursor-grabbing select-none"
           role="region"
@@ -111,11 +119,11 @@ export default function RecipeCard({
           tabIndex={0}
         >
           {/* ── Glassmorphic Card ── */}
-          <div
-            className="relative rounded-3xl p-8 md:p-10 backdrop-blur-xl border transition-all duration-300"
+          <motion.div
+            className="relative rounded-3xl p-8 md:p-10 backdrop-blur-xl border will-change-transform"
             style={{
               background: 'var(--bg-glass)',
-              borderColor: Math.abs(dragX) > 40 ? 'var(--border-active)' : 'var(--border-subtle)',
+              borderColor: cardBorderColor,
               boxShadow: 'var(--shadow-float)',
             }}
           >
@@ -256,9 +264,11 @@ export default function RecipeCard({
             >
               ← Swipe or drag to navigate →
             </p>
-          </div>
+          </motion.div>
         </motion.div>
       </AnimatePresence>
     </div>
   );
-}
+});
+
+export default RecipeCard;

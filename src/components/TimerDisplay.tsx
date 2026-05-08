@@ -5,10 +5,15 @@
  */
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
 import { useAccessibilityStore } from '../stores/accessibilityStore';
 
 export default function TimerDisplay() {
-  const { activeTimer, setActiveTimer, showToast } = useAccessibilityStore();
+  const { activeTimer, setActiveTimer, showToast } = useAccessibilityStore(useShallow((state) => ({
+    activeTimer: state.activeTimer,
+    setActiveTimer: state.setActiveTimer,
+    showToast: state.showToast,
+  })));
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {

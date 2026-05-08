@@ -7,10 +7,15 @@
  */
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
 import { useAccessibilityStore } from '../stores/accessibilityStore';
 
 export default function ToastNotification() {
-  const { toastMessage, toastType, clearToast } = useAccessibilityStore();
+  const { toastMessage, toastType, clearToast } = useAccessibilityStore(useShallow((state) => ({
+    toastMessage: state.toastMessage,
+    toastType: state.toastType,
+    clearToast: state.clearToast,
+  })));
 
   useEffect(() => {
     if (toastMessage) {

@@ -3,6 +3,7 @@
  * Tags use icon + text label (WCAG 1.4.1 — never color alone).
  * Hidden during Cooking Mode (progressive disclosure).
  */
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Recipe } from '../types';
@@ -19,7 +20,7 @@ const recipeEmojis: Record<string, string> = {
   'thai-green-curry': '🍛',
 };
 
-export default function RecipeHeader({ recipe, onStartCooking }: RecipeHeaderProps) {
+const RecipeHeader = memo(function RecipeHeader({ recipe, onStartCooking }: RecipeHeaderProps) {
   const tagColors: Record<string, string> = {
     allergen: 'var(--danger)',
     spiciness: 'var(--warning)',
@@ -161,4 +162,6 @@ export default function RecipeHeader({ recipe, onStartCooking }: RecipeHeaderPro
       </div>
     </motion.div>
   );
-}
+});
+
+export default RecipeHeader;

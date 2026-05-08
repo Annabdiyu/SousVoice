@@ -4,6 +4,7 @@
  */
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
 import { useAccessibilityStore } from '../stores/accessibilityStore';
 
 interface NavbarProps {
@@ -12,7 +13,10 @@ interface NavbarProps {
 
 export default function Navbar({ onOpenSettings }: NavbarProps) {
   const location = useLocation();
-  const { cookingMode, exitCookingMode } = useAccessibilityStore();
+  const { cookingMode, exitCookingMode } = useAccessibilityStore(useShallow((state) => ({
+    cookingMode: state.cookingMode,
+    exitCookingMode: state.exitCookingMode,
+  })));
 
   const navLinks = [
     { to: '/', label: 'Home' },

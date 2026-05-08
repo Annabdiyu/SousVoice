@@ -9,7 +9,9 @@
  * Accessibility: The orb has aria-live="polite" and descriptive
  * labels so screen readers announce state changes.
  */
+import { memo } from 'react';
 import { motion } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
 import { useAccessibilityStore } from '../stores/accessibilityStore';
 
 interface VoiceOrbProps {
@@ -18,8 +20,8 @@ interface VoiceOrbProps {
   onToggle: () => void;
 }
 
-export default function VoiceOrb({ isListening, isSupported, onToggle }: VoiceOrbProps) {
-  const { lastCommand } = useAccessibilityStore();
+const VoiceOrb = memo(function VoiceOrb({ isListening, isSupported, onToggle }: VoiceOrbProps) {
+  const { lastCommand } = useAccessibilityStore(useShallow((state) => ({ lastCommand: state.lastCommand })));
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -110,4 +112,6 @@ export default function VoiceOrb({ isListening, isSupported, onToggle }: VoiceOr
       )}
     </div>
   );
-}
+});
+
+export default VoiceOrb;

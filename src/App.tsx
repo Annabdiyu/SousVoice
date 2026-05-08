@@ -4,6 +4,7 @@
  */
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useShallow } from 'zustand/react/shallow';
 import { useAccessibilityStore } from './stores/accessibilityStore';
 
 import Navbar from './components/Navbar';
@@ -17,7 +18,11 @@ import BrowsePage from './pages/BrowsePage';
 import RecipePage from './pages/RecipePage';
 
 export default function App() {
-  const { colorMode, largeText, cookingMode } = useAccessibilityStore();
+  const { colorMode, largeText, cookingMode } = useAccessibilityStore(useShallow((state) => ({
+    colorMode: state.colorMode,
+    largeText: state.largeText,
+    cookingMode: state.cookingMode,
+  })));
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Apply persisted theme on mount

@@ -1,9 +1,10 @@
 /**
  * Footer — Consistent branding and accessibility statement.
  */
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 
-export default function Footer() {
+const Footer = memo(function Footer() {
   return (
     <footer
       className="relative mt-auto"
@@ -78,4 +79,6 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
+});
+
+export default Footer;

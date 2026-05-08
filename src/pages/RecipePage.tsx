@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
 import { useAccessibilityStore } from '../stores/accessibilityStore';
 import { useVoiceController } from '../hooks/useVoiceController';
 import { getRecipeById } from '../data/recipes';
@@ -21,7 +22,16 @@ export default function RecipePage() {
     cookingMode, enterCookingMode, exitCookingMode,
     currentStepIndex, nextStep, prevStep,
     setActiveTimer, showToast,
-  } = useAccessibilityStore();
+  } = useAccessibilityStore(useShallow((state) => ({
+    cookingMode: state.cookingMode,
+    enterCookingMode: state.enterCookingMode,
+    exitCookingMode: state.exitCookingMode,
+    currentStepIndex: state.currentStepIndex,
+    nextStep: state.nextStep,
+    prevStep: state.prevStep,
+    setActiveTimer: state.setActiveTimer,
+    showToast: state.showToast,
+  })));
 
   const [direction, setDirection] = useState(1);
 

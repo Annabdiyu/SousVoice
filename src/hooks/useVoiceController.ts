@@ -4,6 +4,7 @@
  * Error Recovery (Nielsen #9): Unrecognized commands show friendly toasts.
  */
 import { useCallback, useEffect, useRef } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useAccessibilityStore } from '../stores/accessibilityStore';
 
 interface SpeechRecognitionEvent extends Event {
@@ -43,8 +44,21 @@ interface VoiceHandlers {
 export function useVoiceController(handlers: VoiceHandlers) {
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const isListeningRef = useRef(false);
+  const handlersRef = useRef(handlers);
+
+  // Update handlers ref on every render to avoid stale closures without tearing down recognition
+  useEffect(() => {
+    handlersRef.current = handlers;
+  }, [handlers]);
+
   const { isListening, setIsListening, setLastCommand, showToast, voiceEnabled } =
-    useAccessibilityStore();
+    useAccessibilityStore(useShallow((state) => ({
+      isListening: state.isListening,
+      setIsListening: state.setIsListening,
+      setLastCommand: state.setLastCommand,
+      showToast: state.showToast,
+      voiceEnabled: state.voiceEnabled,
+    })));
   const lastTranscriptRef = useRef('');
   const isSupported =
     typeof window !== 'undefined' &&
@@ -57,22 +71,22 @@ export function useVoiceController(handlers: VoiceHandlers) {
       setLastCommand(cmd);
 
       if (cmd.includes('next') || cmd.includes('forward') || cmd.includes('continue')) {
-        handlers.onNext();
+        handlersRef.current.onNext();
         showToast('✓ Next step', 'success');
         return;
       }
       if (cmd.includes('back') || cmd.includes('previous')) {
-        handlers.onBack();
+        handlersRef.current.onBack();
         showToast('✓ Previous step', 'success');
         return;
       }
       if (cmd.includes('repeat') || cmd.includes('again')) {
-        handlers.onRepeat();
+        handlersRef.current.onRepeat();
         showToast('✓ Repeating step', 'success');
         return;
       }
       if (cmd.includes('timer')) {
-        handlers.onStartTimer();
+        handlersRef.current.onStartTimer();
         showToast('✓ Timer started!', 'success');
         return;
       }
@@ -83,7 +97,7 @@ export function useVoiceController(handlers: VoiceHandlers) {
       }
       showToast(`🤔 Heard: "${cmd}". Try "Next", "Back", or "Repeat".`, 'error');
     },
-    [handlers, setLastCommand, showToast]
+    [setLastCommand, showToast]
   );
 
   const startListening = useCallback(() => {
