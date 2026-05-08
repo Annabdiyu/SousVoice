@@ -210,3 +210,16 @@
 .will-change-transform {
   will-change: transform;
 }
+
+/* ── HCI: Fitts's Law touch target enhancement ─────────────────────────── */
+.button-touch-target {
+  position: relative;
+}
+.button-touch-target::after {
+  content: '';
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  bottom: -12px;
+  left: -12px;
+}
