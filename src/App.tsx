@@ -37,6 +37,7 @@ import SettingsPanel from './components/SettingsPanel';
 import TimerDisplay from './components/TimerDisplay';
 import ToastNotification from './components/ToastNotification';
 import ShoppingList from './components/ShoppingList';
+import TopNav from './components/TopNav';
 
 export default function App() {
   const {
@@ -272,81 +273,13 @@ export default function App() {
       )}
 
       {/* ── Top Navigation Bar ── */}
-      <nav
-        className="sticky top-0 z-30 flex items-center justify-between px-6 py-4 backdrop-blur-xl"
-        style={{
-          background: 'var(--bg-glass)',
-          borderBottom: '1px solid var(--border-subtle)',
-        }}
-        role="navigation"
-        aria-label="Main navigation"
-      >
-        <div className="flex items-center gap-4">
-          {/* Logo */}
-          <motion.div
-            className="flex items-center gap-2 cursor-pointer"
-            whileHover={{ scale: 1.03 }}
-            onClick={handleGoHome}
-          >
-            <span className="text-2xl">🍳</span>
-            <h1
-              className="text-xl font-bold tracking-tight"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
-            >
-              Sous<span style={{ color: 'var(--accent-primary)' }}>Voice</span>
-            </h1>
-          </motion.div>
-        </div>
-
-        {/* Nav Actions */}
-        <div className="flex items-center gap-3">
-
-          {cookingMode && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              onClick={exitCookingMode}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
-              style={{
-                background: 'var(--bg-card)',
-                color: 'var(--danger)',
-                border: '1px solid var(--danger)',
-              }}
-              id="btn-exit-cooking"
-              aria-label="Exit cooking mode"
-            >
-              ✕ Exit
-            </motion.button>
-          )}
-
-          <button
-            onClick={() => setShoppingOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
-            style={{
-              background: 'var(--bg-card)',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--border-subtle)',
-            }}
-            aria-label="Open shopping list"
-          >
-            🛒 <span className="hidden sm:inline">List</span>
-          </button>
-
-          <button
-            onClick={() => setSettingsOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
-            style={{
-              background: 'var(--bg-card)',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--border-subtle)',
-            }}
-            id="btn-open-settings"
-            aria-label="Open accessibility settings"
-          >
-            ⚙️ <span className="hidden sm:inline">Settings</span>
-          </button>
-        </div>
-      </nav>
+      <TopNav 
+        cookingMode={cookingMode}
+        onGoHome={handleGoHome}
+        onExitCooking={exitCookingMode}
+        onOpenSettings={() => setSettingsOpen(true)}
+        onOpenShoppingList={() => setShoppingOpen(true)}
+      />
 
       {/* ── Main Content Area ── */}
       <main className="relative z-10 px-4 py-8 md:py-12">
