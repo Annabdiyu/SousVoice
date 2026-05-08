@@ -1,20 +1,60 @@
 @import "tailwindcss";
+@source "../src/**/*.{ts,tsx}";
 
-/*
- * ============================================================================
- * SOUSVOICE — GLOBAL DESIGN TOKENS & THEME SYSTEM
- * ============================================================================
- *
- * HCI Justification: We use CSS custom properties for theme switching because
- * it allows instantaneous, non-disruptive transitions between color modes.
- * This supports WCAG 2.1 guideline 1.4.1 (Use of Color) and 1.4.3 (Contrast).
- *
- * Three color modes are implemented:
- *   1. Standard — A rich dark theme with violet/indigo accents
- *   2. Protanopia — Swaps red-green to blue-yellow for red-blind users
- *   3. High Contrast — Maximum contrast ratios (>= 7:1) for low-vision users
- * ============================================================================
- */
+@theme {
+  /* Colors */
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-card: var(--bg-card);
+  --color-bg-card-hover: var(--bg-card-hover);
+  --color-bg-glass: var(--bg-glass);
+  --color-bg-glass-hover: var(--bg-glass-hover);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-secondary: var(--accent-secondary);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+
+  /* Borders & Shadows */
+  --color-border-subtle: var(--border-subtle);
+  --color-border-active: var(--border-active);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-float: var(--shadow-float);
+
+  /* Typography */
+  --font-body: var(--font-body);
+  --font-display: var(--font-display);
+
+  /* Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  /* Animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+    50% { box-shadow: 0 0 40px var(--accent-glow-strong); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+}
 
 /* ── Standard Theme (Default Dark Mode) ──────────────────────────────────── */
 :root {
@@ -57,7 +97,6 @@
 }
 
 /* ── Protanopia Mode (Red-Blind) ─────────────────────────────────────────── */
-/* HCI: Replaces red/green signaling with blue/yellow per CVD guidelines. */
 [data-theme="protanopia"] {
   --accent-primary: #38bdf8;
   --accent-secondary: #0284c7;
@@ -77,7 +116,6 @@
 }
 
 /* ── High Contrast Mode ──────────────────────────────────────────────────── */
-/* HCI: Meets WCAG AAA (7:1+) contrast ratios for low-vision accessibility. */
 [data-theme="high-contrast"] {
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
@@ -107,82 +145,60 @@
   --shadow-float: 0 0 0 3px var(--accent-primary), 0 20px 60px rgba(0, 0, 0, 0.9);
 }
 
-/* ── Accessibility: 1.5x Typography Scaling ──────────────────────────────── */
-/* HCI: Larger text reduces fixation duration, improving readability for
-   users with low vision (WCAG 1.4.4 — Resize Text). */
+/* ── Accessibility: Scaling ─────────────────────────────────────────────── */
 [data-a11y-scale="true"] {
   --scale-factor: 1.5;
 }
 
-/* ── Global Styles ───────────────────────────────────────────────────────── */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: calc(16px * var(--scale-factor));
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  *:focus-visible {
+    outline: 3px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 3px;
+  }
 }
 
-html {
-  font-size: calc(16px * var(--scale-factor));
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  font-family: var(--font-body);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  min-height: 100vh;
-  overflow-x: hidden;
-  line-height: 1.6;
-}
-
-/* ── Focus Styles (WCAG 2.4.7 — Focus Visible) ──────────────────────────── */
-/* HCI: Visible focus indicators are critical for keyboard-only users. */
-*:focus-visible {
-  outline: 3px solid var(--accent-primary);
-  outline-offset: 3px;
-  border-radius: var(--radius-sm);
-}
-
-/* ── Selection ───────────────────────────────────────────────────────────── */
-::selection {
-  background: var(--accent-primary);
-  color: var(--bg-primary);
-}
-
-/* ── Scrollbar Styling ───────────────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--accent-primary);
-  border-radius: 3px;
-}
-
-/* ── Utility Animations ──────────────────────────────────────────────────── */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
-  50% { box-shadow: 0 0 40px var(--accent-glow-strong); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-/* ── Reduced Motion Preference ───────────────────────────────────────────── */
-/* HCI: Respect user's OS-level motion preferences (WCAG 2.3.3). */
+/* ── Reduced Motion ──────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -190,5 +206,3 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
-
-/* SousVoice v1.0 — Accessibility-First Recipe Reader */
