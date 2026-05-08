@@ -15,7 +15,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { ColorMode } from '../types';
+import type { ColorMode, ShoppingItem } from '../types';
 
 // Re-export types for convenience
 export type { ColorMode, RecipeStep, RecipeTag, Recipe } from '../types';
@@ -75,10 +75,15 @@ interface AccessibilityState {
   setActiveTimer: (seconds: number | null) => void;
 
   // ── Toast / Error Recovery ──
-  toastMessage: string | null;
-  toastType: 'info' | 'error' | 'success' | null;
   showToast: (message: string, type: 'info' | 'error' | 'success') => void;
   clearToast: () => void;
+
+  // ── Shopping List State ──
+  shoppingList: ShoppingItem[];
+  addToShoppingList: (ingredients: string[], recipeTitle: string) => void;
+  removeFromShoppingList: (id: string) => void;
+  toggleShoppingItem: (id: string) => void;
+  clearShoppingList: () => void;
 }
 
 export const useAccessibilityStore = create<AccessibilityState>()(
@@ -156,10 +161,29 @@ export const useAccessibilityStore = create<AccessibilityState>()(
       setActiveTimer: (seconds) => set({ activeTimer: seconds }),
 
       // ── Toast / Error Recovery ──
-      toastMessage: null,
-      toastType: null,
       showToast: (message, type) => set({ toastMessage: message, toastType: type }),
       clearToast: () => set({ toastMessage: null, toastType: null }),
+
+      // ── Shopping List Actions ──
+      shoppingList: [],
+      addToShoppingList: (ingredients, recipeTitle) => set((state) => {
+        const newItems: ShoppingItem[] = ingredients.map(ing => ({
+          id: crypto.randomUUID(),
+          name: ing,
+          recipeTitle,
+          completed: false,
+        }));
+        return { shoppingList: [...state.shoppingList, ...newItems] };
+      }),
+      removeFromShoppingList: (id) => set((state) => ({
+        shoppingList: state.shoppingList.filter(item => item.id !== id)
+      })),
+      toggleShoppingItem: (id) => set((state) => ({
+        shoppingList: state.shoppingList.map(item => 
+          item.id === id ? { ...item, completed: !item.completed } : item
+        )
+      })),
+      clearShoppingList: () => set({ shoppingList: [] }),
     }),
     {
       name: 'sousvoice-accessibility',
@@ -170,6 +194,7 @@ export const useAccessibilityStore = create<AccessibilityState>()(
         voiceEnabled: state.voiceEnabled,
         autoReadSteps: state.autoReadSteps,
         reducedMotion: state.reducedMotion,
+        shoppingList: state.shoppingList,
       }),
     }
   )

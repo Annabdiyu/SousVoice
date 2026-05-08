@@ -36,6 +36,7 @@ import VoiceOrb from './components/VoiceOrb';
 import SettingsPanel from './components/SettingsPanel';
 import TimerDisplay from './components/TimerDisplay';
 import ToastNotification from './components/ToastNotification';
+import ShoppingList from './components/ShoppingList';
 
 export default function App() {
   const {
@@ -77,6 +78,7 @@ export default function App() {
   })));
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [shoppingOpen, setShoppingOpen] = useState(false);
   const [direction, setDirection] = useState(1);
 
   // Find the currently active recipe
@@ -318,6 +320,19 @@ export default function App() {
           )}
 
           <button
+            onClick={() => setShoppingOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
+            style={{
+              background: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border-subtle)',
+            }}
+            aria-label="Open shopping list"
+          >
+            🛒 <span className="hidden sm:inline">List</span>
+          </button>
+
+          <button
             onClick={() => setSettingsOpen(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
             style={{
@@ -429,6 +444,7 @@ export default function App() {
 
       {/* ── Overlay Components ── */}
       <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <ShoppingList isOpen={shoppingOpen} onClose={() => setShoppingOpen(false)} />
       <TimerDisplay />
       <ToastNotification />
     </div>

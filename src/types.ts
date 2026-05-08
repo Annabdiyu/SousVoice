@@ -31,3 +31,10 @@ export interface Recipe {
   steps: RecipeStep[];
   imageUrl?: string;
 }
+
+export interface ShoppingItem {
+  id: string;
+  name: string;
+  recipeTitle: string;
+  completed: boolean;
+}

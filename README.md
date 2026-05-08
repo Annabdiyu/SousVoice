@@ -1,6 +1,6 @@
 # 🍳 SousVoice — Accessibility-First Recipe Reader
 
-![SousVoice Mockup](file:///home/ashenafi/.gemini/antigravity/brain/7ed39f80-e835-4f2c-bab2-0bb99774e657/sousvoice_mockup_design_1778654744064.png)
+![SousVoice Mockup](/home/ashenafi/.gemini/antigravity/brain/7ed39f80-e835-4f2c-bab2-0bb99774e657/sousvoice_mockup_design_1778654744064.png)
 
 > **"Experience the future of hands-free cooking."**
 > SousVoice is a high-fidelity React prototype designed for an **accessibility-first, voice-controlled recipe experience**. Built with advanced spring physics and a "weightless" Antigravity UI, it redefines how we interact with technology in the kitchen.
@@ -96,6 +96,3 @@ src/
 
 ---
 
-## 📝 License
-
-Developed for academic purposes as part of a Human-Computer Interaction course. Built with 🍳 and 💜.

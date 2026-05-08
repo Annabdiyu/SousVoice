@@ -9,6 +9,7 @@
  */
 import { memo } from 'react';
 import { motion } from 'framer-motion';
+import { useAccessibilityStore } from '../stores/accessibilityStore';
 import type { Recipe } from '../types';
 
 interface RecipeHeaderProps {
@@ -96,12 +97,27 @@ const RecipeHeader = memo(function RecipeHeader({ recipe, onStartCooking, onBack
           backdropFilter: 'blur(12px)',
         }}
       >
-        <h2
-          className="text-lg font-bold mb-4 flex items-center gap-2"
-          style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
-        >
-          🛒 Ingredients
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2
+            className="text-lg font-bold flex items-center gap-2"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
+          >
+            🛒 Ingredients
+          </h2>
+          <motion.button
+            onClick={() => {
+              useAccessibilityStore.getState().addToShoppingList(recipe.ingredients, recipe.title);
+              useAccessibilityStore.getState().showToast(`Added ${recipe.ingredients.length} items to your list!`, 'success');
+              useAccessibilityStore.getState().speak(`Added all ingredients from ${recipe.title} to your shopping list.`);
+            }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="text-xs font-bold px-3 py-1.5 rounded-lg transition-all"
+            style={{ background: 'var(--bg-card)', color: 'var(--accent-primary)', border: '1px solid var(--accent-primary)' }}
+          >
+            + Add All to List
+          </motion.button>
+        </div>
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-2" role="list">
           {recipe.ingredients.map((item, i) => (
             <li
