@@ -56,6 +56,7 @@ export function useVoiceController(handlers: VoiceHandlers) {
       lastTranscriptRef.current = cmd;
       setLastCommand(cmd);
 
+      // ── Step Navigation ──
       if (cmd.includes('next') || cmd.includes('forward') || cmd.includes('continue')) {
         handlers.onNext();
         showToast('✓ Next step', 'success');
@@ -66,22 +67,53 @@ export function useVoiceController(handlers: VoiceHandlers) {
         showToast('✓ Previous step', 'success');
         return;
       }
-      if (cmd.includes('repeat') || cmd.includes('again')) {
+      if (cmd.includes('repeat') || cmd.includes('again') || cmd.includes('read')) {
         handlers.onRepeat();
         showToast('✓ Repeating step', 'success');
         return;
       }
-      if (cmd.includes('timer')) {
+
+      // Jump to step (e.g., "Go to step 3" or "Step 3")
+      const stepMatch = cmd.match(/(?:go to )?step (\d+)/);
+      if (stepMatch) {
+        const stepNum = parseInt(stepMatch[1], 10);
+        // We'll pass this to a new handler in App.tsx or use a generic approach
+        // For now, let's assume handlers.onGoToStep exists or we'll add it
+        (handlers as any).onGoToStep?.(stepNum - 1);
+        showToast(`✓ Moving to step ${stepNum}`, 'success');
+        return;
+      }
+
+      // ── Timer Controls ──
+      if (cmd.includes('start timer') || cmd.includes('set timer')) {
         handlers.onStartTimer();
         showToast('✓ Timer started!', 'success');
         return;
       }
-      if (cmd.includes('stop') || cmd.includes('pause')) {
+      if (cmd.includes('stop timer') || cmd.includes('pause timer')) {
+        // We'll add this to handlers
+        (handlers as any).onStopTimer?.();
+        showToast('✓ Timer stopped', 'info');
+        return;
+      }
+
+      // ── System Controls ──
+      if (cmd.includes('stop') || cmd.includes('pause') || cmd.includes('cancel')) {
         stopListening();
         showToast('🎤 Voice paused', 'info');
         return;
       }
-      showToast(`🤔 Heard: "${cmd}". Try "Next", "Back", or "Repeat".`, 'error');
+      if (cmd.includes('home') || cmd.includes('show recipes') || cmd.includes('library')) {
+        (handlers as any).onGoHome?.();
+        showToast('✓ Returning home', 'info');
+        return;
+      }
+      if (cmd.includes('help') || cmd.includes('what can i say')) {
+        showToast('Try: "Next", "Back", "Repeat", "Step 2", or "Go Home"', 'info');
+        return;
+      }
+
+      showToast(`🤔 Heard: "${cmd}". Try "Help" for commands.`, 'error');
     },
     [handlers, setLastCommand, showToast]
   );

@@ -26,10 +26,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAccessibilityStore } from './stores/accessibilityStore';
 import { useVoiceController } from './hooks/useVoiceController';
-import { sampleRecipe } from './data/recipes';
+import { recipes } from './data/recipes';
 
 import RecipeCard from './components/RecipeCard';
 import RecipeHeader from './components/RecipeHeader';
+import RecipeGallery from './components/RecipeGallery';
 import VoiceOrb from './components/VoiceOrb';
 import SettingsPanel from './components/SettingsPanel';
 import TimerDisplay from './components/TimerDisplay';
@@ -40,24 +41,43 @@ export default function App() {
     cookingMode,
     enterCookingMode,
     exitCookingMode,
+    selectedRecipeId,
+    setSelectedRecipe,
     currentStepIndex,
+    setCurrentStep,
     nextStep,
     prevStep,
     colorMode,
     largeText,
+    reducedMotion,
+    autoReadSteps,
     setActiveTimer,
     showToast,
+    speak,
   } = useAccessibilityStore();
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [direction, setDirection] = useState(1);
-  const recipe = sampleRecipe;
+
+  // Find the currently active recipe
+  const recipe = recipes.find(r => r.id === selectedRecipeId) || recipes[0];
 
   // ── Apply persisted theme on mount ──
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', colorMode);
     document.documentElement.setAttribute('data-a11y-scale', String(largeText));
   }, []);
+
+  // ── Auto-Read Step Logic (HCI: Accessibility) ──
+  useEffect(() => {
+    if (cookingMode && autoReadSteps && selectedRecipeId) {
+      const step = recipe.steps[currentStepIndex];
+      const timer = setTimeout(() => {
+        speak(`Step ${currentStepIndex + 1}: ${step.instruction}`);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentStepIndex, cookingMode, autoReadSteps, recipe.steps, speak, selectedRecipeId]);
 
   // ── Keyboard shortcuts (WCAG 2.1.1 — Keyboard accessible) ──
   useEffect(() => {
@@ -84,8 +104,9 @@ export default function App() {
       nextStep(recipe.steps.length);
     } else {
       showToast('🎉 You\'ve completed all steps!', 'success');
+      speak("Congratulations! You've completed all steps.");
     }
-  }, [currentStepIndex, recipe.steps.length, nextStep, showToast]);
+  }, [currentStepIndex, recipe.steps.length, nextStep, showToast, speak]);
 
   const handlePrev = useCallback(() => {
     if (currentStepIndex > 0) {
@@ -95,16 +116,9 @@ export default function App() {
   }, [currentStepIndex, prevStep]);
 
   const handleRepeat = useCallback(() => {
-    // Use Text-to-Speech to read the current step aloud
     const step = recipe.steps[currentStepIndex];
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(step.instruction);
-      utterance.rate = 0.9;
-      utterance.pitch = 1;
-      window.speechSynthesis.speak(utterance);
-    }
-  }, [currentStepIndex, recipe.steps]);
+    speak(step.instruction);
+  }, [currentStepIndex, recipe.steps, speak]);
 
   const handleStartTimer = useCallback(() => {
     const step = recipe.steps[currentStepIndex];
@@ -115,13 +129,34 @@ export default function App() {
     }
   }, [currentStepIndex, recipe.steps, setActiveTimer, showToast]);
 
+  const handleStopTimer = useCallback(() => {
+    setActiveTimer(null);
+  }, [setActiveTimer]);
+
+  const handleGoToStep = useCallback((index: number) => {
+    if (index >= 0 && index < recipe.steps.length) {
+      setDirection(index > currentStepIndex ? 1 : -1);
+      setCurrentStep(index);
+    } else {
+      showToast('Invalid step number.', 'error');
+    }
+  }, [currentStepIndex, recipe.steps.length, setCurrentStep, showToast]);
+
+  const handleGoHome = useCallback(() => {
+    exitCookingMode();
+    setSelectedRecipe(null);
+  }, [exitCookingMode, setSelectedRecipe]);
+
   // ── Voice controller integration ──
   const { isListening, isSupported, toggleListening } = useVoiceController({
     onNext: handleNext,
     onBack: handlePrev,
     onRepeat: handleRepeat,
     onStartTimer: handleStartTimer,
-  });
+    onStopTimer: handleStopTimer,
+    onGoToStep: handleGoToStep,
+    onGoHome: handleGoHome,
+  } as any);
 
   const currentStep = recipe.steps[currentStepIndex];
 
@@ -139,37 +174,39 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen relative overflow-hidden"
+      className="min-h-screen relative overflow-hidden transition-colors duration-500"
       style={{ background: 'var(--bg-primary)' }}
     >
       {/* ── Ambient Particles (decorative) ── */}
-      <div className="fixed inset-0 pointer-events-none z-0" aria-hidden="true">
-        {particles.map((p) => (
-          <motion.div
-            key={p.id}
-            className="absolute rounded-full"
-            style={{
-              left: `${p.x}%`,
-              top: `${p.y}%`,
-              width: p.size,
-              height: p.size,
-              background: 'var(--accent-primary)',
-              opacity: 0.15,
-            }}
-            animate={{
-              y: [0, -40, 0],
-              x: [0, 15, -15, 0],
-              opacity: [0.1, 0.25, 0.1],
-            }}
-            transition={{
-              duration: p.duration,
-              repeat: Infinity,
-              delay: p.delay,
-              ease: 'easeInOut',
-            }}
-          />
-        ))}
-      </div>
+      {!reducedMotion && (
+        <div className="fixed inset-0 pointer-events-none z-0" aria-hidden="true">
+          {particles.map((p) => (
+            <motion.div
+              key={p.id}
+              className="absolute rounded-full"
+              style={{
+                left: `${p.x}%`,
+                top: `${p.y}%`,
+                width: p.size,
+                height: p.size,
+                background: 'var(--accent-primary)',
+                opacity: 0.15,
+              }}
+              animate={{
+                y: [0, -40, 0],
+                x: [0, 15, -15, 0],
+                opacity: [0.1, 0.25, 0.1],
+              }}
+              transition={{
+                duration: p.duration,
+                repeat: Infinity,
+                delay: p.delay,
+                ease: 'easeInOut',
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* ── Top Navigation Bar ── */}
       <nav
@@ -181,22 +218,26 @@ export default function App() {
         role="navigation"
         aria-label="Main navigation"
       >
-        {/* Logo */}
-        <motion.div
-          className="flex items-center gap-2"
-          whileHover={{ scale: 1.03 }}
-        >
-          <span className="text-2xl">🍳</span>
-          <h1
-            className="text-xl font-bold tracking-tight"
-            style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
+        <div className="flex items-center gap-4">
+          {/* Logo */}
+          <motion.div
+            className="flex items-center gap-2 cursor-pointer"
+            whileHover={{ scale: 1.03 }}
+            onClick={handleGoHome}
           >
-            Sous<span style={{ color: 'var(--accent-primary)' }}>Voice</span>
-          </h1>
-        </motion.div>
+            <span className="text-2xl">🍳</span>
+            <h1
+              className="text-xl font-bold tracking-tight"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
+            >
+              Sous<span style={{ color: 'var(--accent-primary)' }}>Voice</span>
+            </h1>
+          </motion.div>
+        </div>
 
         {/* Nav Actions */}
         <div className="flex items-center gap-3">
+
           {cookingMode && (
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
@@ -234,7 +275,25 @@ export default function App() {
       {/* ── Main Content Area ── */}
       <main className="relative z-10 px-4 py-8 md:py-12">
         <AnimatePresence mode="wait">
-          {!cookingMode ? (
+          {!selectedRecipeId ? (
+            /* ── Recipe Library Mode ── */
+            <motion.div
+              key="library"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
+                  Discover Recipes
+                </h2>
+                <p style={{ color: 'var(--text-secondary)' }}>
+                  Select a recipe or filter by category to get started.
+                </p>
+              </div>
+              <RecipeGallery />
+            </motion.div>
+          ) : !cookingMode ? (
             /* ── Recipe Overview Mode ── */
             <motion.div
               key="overview"
@@ -243,7 +302,7 @@ export default function App() {
               exit={{ opacity: 0, y: -30 }}
               transition={{ type: 'spring', stiffness: 100, damping: 20 }}
             >
-              <RecipeHeader recipe={recipe} onStartCooking={enterCookingMode} />
+              <RecipeHeader recipe={recipe} onStartCooking={enterCookingMode} onBack={handleGoHome} />
             </motion.div>
           ) : (
             /* ── Cooking (Focus) Mode ── */

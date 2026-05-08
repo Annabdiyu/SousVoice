@@ -13,9 +13,10 @@ import type { Recipe } from '../types';
 interface RecipeHeaderProps {
   recipe: Recipe;
   onStartCooking: () => void;
+  onBack: () => void;
 }
 
-export default function RecipeHeader({ recipe, onStartCooking }: RecipeHeaderProps) {
+export default function RecipeHeader({ recipe, onStartCooking, onBack }: RecipeHeaderProps) {
   const tagStyles: Record<string, string> = {
     allergen: 'var(--danger)',
     spiciness: 'var(--warning)',
@@ -30,6 +31,16 @@ export default function RecipeHeader({ recipe, onStartCooking }: RecipeHeaderPro
       transition={{ type: 'spring', stiffness: 100, damping: 18 }}
       className="w-full max-w-3xl mx-auto"
     >
+      {/* ── Back Navigation (HCI: Contextual Navigation) ── */}
+      <motion.button
+        onClick={onBack}
+        className="flex items-center gap-2 mb-6 text-sm font-bold opacity-60 hover:opacity-100 transition-all hover:-translate-x-1"
+        style={{ color: 'var(--text-secondary)' }}
+        aria-label="Return to recipe discovery"
+      >
+        ← Back to Discovery
+      </motion.button>
+
       {/* ── Title Section ── */}
       <div className="text-center mb-8">
         <motion.h1

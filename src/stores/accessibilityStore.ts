@@ -26,18 +26,26 @@ interface AccessibilityState {
   setColorMode: (mode: ColorMode) => void;
 
   // ── Typography Scaling ──
-  // HCI: 1.5x scaling provides a significant readability improvement
-  // for users with low vision without breaking layout.
   largeText: boolean;
   toggleLargeText: () => void;
 
+  // ── Reduced Motion ──
+  // HCI: Disabling decorative animations helps users with vestibular
+  // disorders or motion sensitivity (WCAG 2.3.3).
+  reducedMotion: boolean;
+  toggleReducedMotion: () => void;
+
   // ── Cooking Mode (Focus Mode) ──
-  // HCI: "Progressive Disclosure" — hide secondary UI elements to reduce
-  // cognitive load when the user is actively cooking.
   cookingMode: boolean;
   toggleCookingMode: () => void;
   enterCookingMode: () => void;
   exitCookingMode: () => void;
+
+  // ── Recipe Selection ──
+  selectedRecipeId: string | null;
+  setSelectedRecipe: (id: string | null) => void;
+  filterTag: string | null;
+  setFilterTag: (tag: string | null) => void;
 
   // ── Recipe Navigation State ──
   currentStepIndex: number;
@@ -52,6 +60,13 @@ interface AccessibilityState {
   setIsListening: (listening: boolean) => void;
   lastCommand: string;
   setLastCommand: (command: string) => void;
+  
+  // ── Auto-Read Steps ──
+  // HCI: Automatically reading steps aloud provides better accessibility
+  // for users with visual impairments or those who are busy cooking.
+  autoReadSteps: boolean;
+  toggleAutoReadSteps: () => void;
+  speak: (text: string) => void;
 
   // ── Timer State ──
   activeTimer: number | null; // seconds remaining
@@ -83,11 +98,21 @@ export const useAccessibilityStore = create<AccessibilityState>()(
           return { largeText: next };
         }),
 
+      // ── Reduced Motion ──
+      reducedMotion: false,
+      toggleReducedMotion: () => set((state) => ({ reducedMotion: !state.reducedMotion })),
+
       // ── Cooking Mode ──
       cookingMode: false,
       toggleCookingMode: () => set((state) => ({ cookingMode: !state.cookingMode })),
       enterCookingMode: () => set({ cookingMode: true, currentStepIndex: 0 }),
       exitCookingMode: () => set({ cookingMode: false, currentStepIndex: 0, activeTimer: null }),
+
+      // ── Recipe Selection ──
+      selectedRecipeId: null,
+      setSelectedRecipe: (id) => set({ selectedRecipeId: id, cookingMode: false, currentStepIndex: 0 }),
+      filterTag: null,
+      setFilterTag: (tag) => set({ filterTag: tag }),
 
       // ── Recipe Navigation ──
       currentStepIndex: 0,
@@ -109,6 +134,19 @@ export const useAccessibilityStore = create<AccessibilityState>()(
       lastCommand: '',
       setLastCommand: (command) => set({ lastCommand: command }),
 
+      // ── Auto-Read ──
+      autoReadSteps: true,
+      toggleAutoReadSteps: () => set((state) => ({ autoReadSteps: !state.autoReadSteps })),
+      speak: (text) => {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 0.95;
+          utterance.pitch = 1;
+          window.speechSynthesis.speak(utterance);
+        }
+      },
+
       // ── Timer ──
       activeTimer: null,
       setActiveTimer: (seconds) => set({ activeTimer: seconds }),
@@ -126,6 +164,8 @@ export const useAccessibilityStore = create<AccessibilityState>()(
         colorMode: state.colorMode,
         largeText: state.largeText,
         voiceEnabled: state.voiceEnabled,
+        autoReadSteps: state.autoReadSteps,
+        reducedMotion: state.reducedMotion,
       }),
     }
   )
