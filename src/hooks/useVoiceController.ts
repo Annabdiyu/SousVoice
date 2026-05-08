@@ -43,6 +43,7 @@ interface VoiceHandlers {
   onGoToStep: (stepIndex: number) => void;
   onGoHome: () => void;
   onSearch: (query: string) => void;
+  onOpenShopping: () => void;
 }
 
 export function useVoiceController(handlers: VoiceHandlers) {
@@ -121,6 +122,11 @@ export function useVoiceController(handlers: VoiceHandlers) {
       if (cmd.includes('home') || cmd.includes('show recipes') || cmd.includes('library')) {
         handlersRef.current.onGoHome?.();
         showToast('✓ Returning home', 'info');
+        return;
+      }
+      if (cmd.includes('show list') || cmd.includes('shopping list') || cmd.includes('open list')) {
+        handlersRef.current.onOpenShopping?.();
+        showToast('✓ Opening shopping list', 'info');
         return;
       }
 

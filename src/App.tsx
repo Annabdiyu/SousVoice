@@ -217,9 +217,13 @@ export default function App() {
     onRepeat: handleRepeat,
     onStartTimer: handleStartTimer,
     onStopTimer: handleStopTimer,
-    onGoToStep: handleGoToStep,
+    onGoToStep: setCurrentStep,
     onGoHome: handleGoHome,
-    onSearch: handleSearch,
+    onSearch: (q) => {
+      setSearchQuery(q);
+      handleGoHome();
+    },
+    onOpenShopping: () => setShoppingOpen(true),
   });
 
   const currentStep = recipe.steps[currentStepIndex];
