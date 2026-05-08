@@ -167,6 +167,19 @@ export default function App() {
     }
   }, [currentStepIndex, cookingMode, autoReadSteps, recipe.steps, speak, selectedRecipeId]);
 
+  // ── Screen Wake Lock (HCI: Don't let screen sleep while cooking) ──
+  useEffect(() => {
+    let wakeLock: WakeLockSentinel | null = null;
+    if (cookingMode && 'wakeLock' in navigator) {
+      navigator.wakeLock.request('screen')
+        .then((lock) => { wakeLock = lock; })
+        .catch(console.warn);
+    }
+    return () => {
+      wakeLock?.release().catch(console.warn);
+    };
+  }, [cookingMode]);
+
   // ── Keyboard shortcuts (WCAG 2.1.1 — Keyboard accessible) ──
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -195,12 +208,12 @@ export default function App() {
     onGoToStep: handleGoToStep,
     onGoHome: handleGoHome,
     onSearch: handleSearch,
-  } as any);
+  });
 
   const currentStep = recipe.steps[currentStepIndex];
 
   // ── Floating particle effect for ambiance ──
-  const particles = useRef(
+  const { current: particles } = useRef(
     Array.from({ length: 6 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -209,7 +222,7 @@ export default function App() {
       duration: Math.random() * 8 + 6,
       delay: Math.random() * 4,
     }))
-  ).current;
+  );
 
   return (
     <div
