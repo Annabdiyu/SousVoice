@@ -82,41 +82,6 @@ export default function App() {
   // Find the currently active recipe
   const recipe = recipes.find(r => r.id === selectedRecipeId) || recipes[0];
 
-  // ── Apply persisted theme on mount ──
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', colorMode);
-    document.documentElement.setAttribute('data-a11y-scale', String(largeText));
-  }, []);
-
-  // ── Auto-Read Step Logic (HCI: Accessibility) ──
-  useEffect(() => {
-    if (cookingMode && autoReadSteps && selectedRecipeId) {
-      const step = recipe.steps[currentStepIndex];
-      const timer = setTimeout(() => {
-        speak(`Step ${currentStepIndex + 1}: ${step.instruction}`);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [currentStepIndex, cookingMode, autoReadSteps, recipe.steps, speak, selectedRecipeId]);
-
-  // ── Keyboard shortcuts (WCAG 2.1.1 — Keyboard accessible) ──
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!cookingMode) return;
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        handleNext();
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        handlePrev();
-      } else if (e.key === 'Escape') {
-        exitCookingMode();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [cookingMode, currentStepIndex]);
-
   // ── Navigation handlers ──
   const handleNext = useCallback(() => {
     if (currentStepIndex < recipe.steps.length - 1) {
@@ -184,6 +149,41 @@ export default function App() {
       showToast(`∅ No results for "${query}"`, 'info');
     }
   }, [handleGoHome, setSearchQuery, showToast, speak]);
+
+  // ── Apply persisted theme on mount ──
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', colorMode);
+    document.documentElement.setAttribute('data-a11y-scale', String(largeText));
+  }, [colorMode, largeText]);
+
+  // ── Auto-Read Step Logic (HCI: Accessibility) ──
+  useEffect(() => {
+    if (cookingMode && autoReadSteps && selectedRecipeId) {
+      const step = recipe.steps[currentStepIndex];
+      const timer = setTimeout(() => {
+        speak(`Step ${currentStepIndex + 1}: ${step.instruction}`);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentStepIndex, cookingMode, autoReadSteps, recipe.steps, speak, selectedRecipeId]);
+
+  // ── Keyboard shortcuts (WCAG 2.1.1 — Keyboard accessible) ──
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!cookingMode) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        handleNext();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === 'Escape') {
+        exitCookingMode();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [cookingMode, handleNext, handlePrev, exitCookingMode]);
 
   // ── Voice controller integration ──
   const { isListening, isSupported, toggleListening } = useVoiceController({
