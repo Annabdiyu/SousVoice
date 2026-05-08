@@ -60,6 +60,15 @@ export default function ToastNotification() {
           >
             ✕
           </button>
+          
+          {/* Progress Bar (HCI: Feedback) */}
+          <motion.div
+            initial={{ scaleX: 1 }}
+            animate={{ scaleX: 0 }}
+            transition={{ duration: 4, ease: 'linear' }}
+            className="absolute bottom-0 left-0 right-0 h-1 origin-left"
+            style={{ background: bgMap[toastType] }}
+          />
         </motion.div>
       )}
     </AnimatePresence>
