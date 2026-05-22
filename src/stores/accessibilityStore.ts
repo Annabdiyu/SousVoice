@@ -15,7 +15,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { ColorMode, ShoppingItem } from '../types';
+import type { ColorMode, Recipe, ShoppingItem } from '../types';
 
 // Re-export types for convenience
 export type { ColorMode, RecipeStep, RecipeTag, Recipe } from '../types';
@@ -86,6 +86,7 @@ interface AccessibilityState {
   removeFromShoppingList: (id: string) => void;
   toggleShoppingItem: (id: string) => void;
   clearShoppingList: () => void;
+  sortByDifficulty: (recipes: Recipe[]) => Recipe[];
 }
 
 export const useAccessibilityStore = create<AccessibilityState>()(
@@ -190,12 +191,12 @@ export const useAccessibilityStore = create<AccessibilityState>()(
       clearShoppingList: () => set({ shoppingList: [] }),
 
       // ── Sorting Logic ──
-      sortByDifficulty: (recipes: any[]) => {
-        const difficultyMap: Record<string, number> = { 'Easy': 1, 'Medium': 2, 'Hard': 3 };
+      sortByDifficulty: (recipes) => {
+        const difficultyMap = { Easy: 1, Medium: 2, Hard: 3 } as const;
         return [...recipes].sort((a, b) => {
-          const aDiff = a.tags.find((t: any) => t.type === 'difficulty')?.label || 'Medium';
-          const bDiff = b.tags.find((t: any) => t.type === 'difficulty')?.label || 'Medium';
-          return difficultyMap[aDiff] - difficultyMap[bDiff];
+          const aDiff = a.tags.find((tag) => tag.type === 'difficulty')?.label ?? 'Medium';
+          const bDiff = b.tags.find((tag) => tag.type === 'difficulty')?.label ?? 'Medium';
+          return difficultyMap[aDiff as keyof typeof difficultyMap] - difficultyMap[bDiff as keyof typeof difficultyMap];
         });
       },
     }),
