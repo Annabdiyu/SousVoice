@@ -252,6 +252,30 @@ export function useVoiceController(handlers: VoiceHandlers) {
     }
   }, [isSupported, createRecognition, showToast, setIsListening]);
 
+  const pauseListening = useCallback(() => {
+    isListeningRef.current = false;
+    setIsListening(false);
+    if (recognitionRef.current) {
+      try { recognitionRef.current.abort(); } catch { /* ok */ }
+    }
+  }, [setIsListening]);
+
+  const resumeListening = useCallback(() => {
+    if (recognitionRef.current) {
+      isListeningRef.current = true;
+      setIsListening(true);
+      try {
+        recognitionRef.current.start();
+        return;
+      } catch {
+        // Fall through to rebuilding the recognizer if the browser rejects
+        // restarting the existing instance.
+      }
+    }
+
+    startListening();
+  }, [setIsListening, startListening]);
+
   const stopListening = useCallback(() => {
     isListeningRef.current = false;
     setIsListening(false);
@@ -279,7 +303,7 @@ export function useVoiceController(handlers: VoiceHandlers) {
     isSpeakingRef.current = true;
 
     if (shouldResumeListening) {
-      stopListening();
+      pauseListening();
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -289,19 +313,19 @@ export function useVoiceController(handlers: VoiceHandlers) {
     utterance.onend = () => {
       isSpeakingRef.current = false;
       if (shouldResumeListening) {
-        startListening();
+        resumeListening();
       }
     };
 
     utterance.onerror = () => {
       isSpeakingRef.current = false;
       if (shouldResumeListening) {
-        startListening();
+        resumeListening();
       }
     };
 
     window.speechSynthesis.speak(utterance);
-  }, [startListening, stopListening]);
+  }, [pauseListening, resumeListening]);
 
   // Cleanup on unmount
   useEffect(() => () => {
