@@ -1,98 +1,105 @@
-# 🍳 SousVoice — Accessibility-First Recipe Reader
+# SousVoice
 
 ![SousVoice Mockup](./docs/assets/mockup.png)
 
-> **"Experience the future of hands-free cooking."**
-> SousVoice is a high-fidelity React prototype designed for an **accessibility-first, voice-controlled recipe experience**. Built with advanced spring physics and a "weightless" Antigravity UI, it redefines how we interact with technology in the kitchen.
+SousVoice is a voice-assisted recipe app built with React, TypeScript, and Vite. It is designed for hands-free cooking, with step-by-step reading, voice navigation, timers, and accessibility-focused UI states.
 
----
+## What it does
 
-## ✨ Core Innovation: The Antigravity Experience
+- Reads recipe steps aloud and automatically continues to the next interaction state.
+- Supports voice commands for navigating steps, repeating instructions, starting and stopping timers, and searching recipes.
+- Uses a focused cooking mode to reduce visual clutter while a recipe is active.
+- Persists accessibility preferences such as text size, voice mode, color mode, and shopping list data.
 
-SousVoice isn't just a recipe app; it's a study in **Human-Computer Interaction (HCI)**.
+## Tech Stack
 
-- **🌌 Antigravity Focus Mode**: Navigate through steps with floating cards powered by `framer-motion` spring physics. Every interaction feels fluid, responsive, and weightless.
-- **🎤 Multimodal Voice Assistant**: Total hands-free control using the Web Speech API. Start timers, navigate steps, and search recipes—all while your hands are busy cooking.
-- **🧠 Cognitive Load Reduction**: Through **Progressive Disclosure**, SousVoice hides secondary UI elements during active cooking, keeping you focused on the task at hand.
-- **🧩 Error Recovery**: Friendly toast notifications and manual overrides ensure that even if a voice command is misunderstood, the user remains in control.
+| Area | Stack |
+| --- | --- |
+| Framework | React 19 + TypeScript |
+| Build tool | Vite |
+| Styling | Tailwind CSS v4 |
+| Animation | Framer Motion |
+| State | Zustand |
+| Voice / speech | Web Speech API |
 
----
+## Accessibility
 
-## 🛠️ Modern Tech Stack
+SousVoice is built around common accessibility patterns:
 
-| Feature | Technology |
-| :--- | :--- |
-| **Framework** | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) |
-| **Animations** | [Framer Motion](https://www.framer.com/motion/) |
-| **State Management** | [Zustand](https://github.com/pmndrs/zustand) |
-| **Voice / TTS** | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) |
-| **Build Tool** | [Vite](https://vitejs.dev/) |
+- Clear system status through toasts, focus states, and the voice orb.
+- Keyboard support for step navigation and exiting cooking mode.
+- Reduced visual complexity in cooking mode.
+- Large touch targets for important actions.
+- Text scaling and color modes for different vision needs.
 
----
+## Voice Commands
 
-## ♿ Inclusive Design (WCAG 2.1 Compliance)
-
-SousVoice was built from the ground up to be accessible to everyone, following strict WCAG 2.1 guidelines:
-
-*   **1.4.1 Use of Color**: Information is never conveyed by color alone. Tags and indicators use both text and iconography.
-*   **1.4.3 Contrast (AAA)**: Includes a **High Contrast Mode** providing ≥7:1 ratios for low-vision users.
-*   **1.4.4 Resize Text**: Built-in 1.5× typography scaling for improved readability.
-*   **2.1.1 Keyboard Accessible**: Full navigation support via arrow keys and Escape.
-*   **Color-Blind Optimization**: Three distinct modes:
-    *   **Standard**: Deep Violet (#8b5cf6)
-    *   **Protanopia**: Sky Blue (#38bdf8)
-    *   **High Contrast**: Sharp Yellow (#ffdd00)
-
----
-
-## 🎤 Command Your Kitchen
+The app recognizes a small set of cooking-focused commands:
 
 | Command | Action |
-| :--- | :--- |
-| `"Next"` / `"Forward"` | Advance to the next cooking step |
-| `"Back"` / `"Previous"` | Revert to the previous step |
-| `"Repeat"` / `"Again"` | Hear the current step read aloud |
-| `"Start Timer"` | Automatically set a timer for the current step |
-| `"Search [Recipe]"` | Find a specific dish in the library |
-| `"Stop"` / `"Pause"` | Temporarily disable voice recognition |
+| --- | --- |
+| `Next`, `Forward`, `Continue` | Move to the next step |
+| `Back`, `Previous` | Go to the previous step |
+| `Repeat`, `Again`, `Read` | Read the current step again |
+| `Go to step 3` | Jump to a specific step |
+| `Start timer`, `Set timer`, `Timer` | Start the step timer |
+| `Stop timer`, `Pause timer` | Stop the active timer |
+| `Search for pasta` | Search the recipe library |
+| `Home`, `Show recipes`, `Library` | Leave cooking mode and return to the library |
+| `Show list`, `Shopping list`, `Open list` | Open the shopping list |
+| `Stop`, `Pause`, `Cancel` | Pause voice recognition |
 
----
+## Local Development
 
-## 🚀 Getting Started
+1. Install dependencies.
 
-Experience SousVoice on your local machine in seconds:
+   ```bash
+   npm install
+   ```
 
-1.  **Install dependencies**:
-    ```bash
-    npm install
-    ```
-2.  **Launch the development server**:
-    ```bash
-    npm run dev
-    ```
-3.  **Explore**: Open [http://localhost:5173](http://localhost:5173) in your browser.
+2. Start the development server.
 
----
+   ```bash
+   npm run dev
+   ```
 
-## 📂 Project Architecture
+3. Open the app in your browser.
 
-```bash
+   ```
+   http://localhost:5173
+   ```
+
+## Build and Test
+
+- Production build: `npm run build`
+- Preview the build locally: `npm run preview`
+- Run tests: `npm run test`
+- Lint the project: `npm run lint`
+
+## Project Structure
+
+```text
 src/
-├── components/           # Modular UI (RecipeCards, VoiceOrb, etc.)
-├── hooks/                # Voice controller logic & Speech API integration
-├── stores/               # Global state for a11y & cooking flow
-├── data/                 # Curated recipe library
-└── index.css             # Radical design tokens & theme system
+├── components/   UI components such as the recipe card, voice orb, timer, and toast
+├── hooks/        Voice controller logic and speech coordination
+├── stores/       Global accessibility and cooking state
+├── data/         Recipe content
+└── test/         Test setup and mocks
 ```
 
----
+## Browser Notes
 
-## 📚 HCI Foundations
+- Voice features depend on the Web Speech API.
+- Microphone permission is required for voice input.
+- Some browsers support speech recognition more reliably than others.
+- If voice input is unavailable, the UI still works with mouse and keyboard.
 
-*   **Nielsen's Heuristics**: Applied for system status visibility, user control, and consistency.
-*   **Fitts's Law**: Implementation of large, generous touch targets for messy cooking scenarios.
-*   **Miller's Law**: Reducing working memory demands by presenting one step at a time.
+## HCI Notes
 
----
+This project explores a few interaction design ideas:
+
+- Progressive disclosure to reduce cognitive load during cooking.
+- High-visibility feedback for listening state, timers, and voice actions.
+- Error recovery through toasts and manual controls.
+- Single-task focus during step-by-step cooking.
 
